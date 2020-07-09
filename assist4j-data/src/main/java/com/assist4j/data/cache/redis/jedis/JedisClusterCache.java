@@ -107,6 +107,47 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		jedisCluster.del(key);
 	}
 
+	@Override
+	public <T>boolean hset(String key, String field, T value, long timeout) {
+		String val = null;
+		if (value.getClass() != String.class) {
+			val = JSON.toJSONString(value);
+		} else {
+			val = (String) value;
+		}
+		jedisCluster.hset(key, field, val);
+		jedisCluster.expire(key, (int) timeout);
+		return true;
+	}
+
+	@Override
+	public String hget(String key, String field) {
+		return jedisCluster.hget(key, field);
+	}
+
+	@Override
+	public <T>T hget(String key, String field, Class<T> clz) {
+		String val = hget(key, field);
+		if (val == null) {
+			return null;
+		}
+		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
+	}
+
+	@Override
+	public <T>T hget(String key, String field, TypeReference<T> type) {
+		String val = hget(key, field);
+		if (val == null) {
+			return null;
+		}
+		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
+	}
+
+	@Override
+	public void remove(String key, String field) {
+		jedisCluster.hdel(key, field);
+	}
+
 	private boolean setNx(String key, String owner, long timeout) {
 		String res = jedisCluster.set(key, owner, "NX", "EX", (int) timeout);
 		return "OK".equalsIgnoreCase(res);

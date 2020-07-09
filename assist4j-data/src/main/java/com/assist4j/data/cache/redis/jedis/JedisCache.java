@@ -11,6 +11,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -125,6 +126,47 @@ public class JedisCache extends AbstractCache implements RedisCache {
 	@Override
 	public void remove(String key) {
 		redisTemplate.delete(key);
+	}
+
+	@Override
+	public <T>boolean hset(String key, String field, T value, long timeout) {
+		String val = null;
+		if (value.getClass() != String.class) {
+			val = JSON.toJSONString(value);
+		} else {
+			val = (String) value;
+		}
+		redisTemplate.opsForHash().put(key, field, val);
+		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+		return true;
+	}
+
+	@Override
+	public String hget(String key, String field) {
+		return (String) redisTemplate.opsForHash().get(key, field);
+	}
+
+	@Override
+	public <T>T hget(String key, String field, Class<T> clz) {
+		String val = hget(key, field);
+		if (val == null) {
+			return null;
+		}
+		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
+	}
+
+	@Override
+	public <T>T hget(String key, String field, TypeReference<T> type) {
+		String val = hget(key, field);
+		if (val == null) {
+			return null;
+		}
+		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
+	}
+
+	@Override
+	public void remove(String key, String field) {
+		redisTemplate.opsForHash().delete(key, field);
 	}
 
 	private boolean setNx(String key, String owner, long timeout) {

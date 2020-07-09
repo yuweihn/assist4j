@@ -43,6 +43,16 @@ public interface Cache {
 	 */
 	void remove(String key);
 
+	/**
+	 * timeout 过期时间(s)。
+	 * @return
+	 */
+	<T>boolean hset(String key, String field, T value, long timeout);
+	String hget(String key, String field);
+	<T>T hget(String key, String field, Class<T> clz);
+	<T>T hget(String key, String field, TypeReference<T> type);
+	void remove(String key, String field);
+
 	<T>boolean lock(String key, T owner, long timeout);
 	/**
 	 * @param key
