@@ -2,6 +2,7 @@ package com.assist4j.data.cache;
 
 
 import com.alibaba.fastjson.TypeReference;
+import java.util.Map;
 
 
 /**
@@ -51,6 +52,14 @@ public interface Cache {
 	String hget(String key, String field);
 	<T>T hget(String key, String field, Class<T> clz);
 	<T>T hget(String key, String field, TypeReference<T> type);
+	Map<String, String> hgetAll(String key);
+	<T>Map<String, T> hgetAll(String key, Class<T> clz);
+	<T>Map<String, T> hgetAll(String key, TypeReference<T> type);
+	/**
+	 * timeout 过期时间(s)。
+	 * @return
+	 */
+	<T>boolean hmset(String key, Map<String, T> entries, long timeout);
 	void remove(String key, String field);
 
 	<T>boolean lock(String key, T owner, long timeout);

@@ -11,7 +11,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -19,7 +18,9 @@ import org.springframework.scripting.support.ResourceScriptSource;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
@@ -162,6 +163,63 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return null;
 		}
 		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
+	}
+
+	@Override
+	public Map<String, String> hgetAll(String key) {
+		Map<?, ?> entries = redisTemplate.opsForHash().entries(key);
+		return (Map<String, String>) entries;
+	}
+
+	@Override
+	public <T>Map<String, T> hgetAll(String key, Class<T> clz) {
+		Map<String, String> strMap = hgetAll(key);
+		if (clz == String.class) {
+			return (Map<String, T>) strMap;
+		}
+		Map<String, T> resultMap = new HashMap<String, T>();
+		if (strMap == null || strMap.isEmpty()) {
+			return resultMap;
+		}
+		for (Map.Entry<String, String> entry: strMap.entrySet()) {
+			resultMap.put(entry.getKey(), JSON.parseObject(entry.getValue(), clz));
+		}
+		return resultMap;
+	}
+
+	@Override
+	public <T>Map<String, T> hgetAll(String key, TypeReference<T> type) {
+		Map<String, String> strMap = hgetAll(key);
+		if (type.getType() == String.class) {
+			return (Map<String, T>) strMap;
+		}
+		Map<String, T> resultMap = new HashMap<String, T>();
+		if (strMap == null || strMap.isEmpty()) {
+			return resultMap;
+		}
+		for (Map.Entry<String, String> entry: strMap.entrySet()) {
+			resultMap.put(entry.getKey(), JSON.parseObject(entry.getValue(), type));
+		}
+		return resultMap;
+	}
+
+	@Override
+	public <T>boolean hmset(String key, Map<String, T> entries, long timeout) {
+		if (entries == null || entries.isEmpty()) {
+			return true;
+		}
+		Class<?> valClass = entries.values().toArray()[0].getClass();
+		if (valClass == String.class) {
+			redisTemplate.opsForHash().putAll(key, (Map<String, String>) entries);
+		} else {
+			Map<String, String> strMap = new HashMap<String, String>();
+			for (Map.Entry<String, T> entry: entries.entrySet()) {
+				strMap.put(entry.getKey(), JSON.toJSONString(entry.getValue()));
+			}
+			redisTemplate.opsForHash().putAll(key, strMap);
+		}
+		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+		return true;
 	}
 
 	@Override

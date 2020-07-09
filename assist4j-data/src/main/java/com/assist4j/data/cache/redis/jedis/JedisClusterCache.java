@@ -1,10 +1,7 @@
 package com.assist4j.data.cache.redis.jedis;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -141,6 +138,62 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return null;
 		}
 		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
+	}
+
+	@Override
+	public Map<String, String> hgetAll(String key) {
+		return jedisCluster.hgetAll(key);
+	}
+
+	@Override
+	public <T>Map<String, T> hgetAll(String key, Class<T> clz) {
+		Map<String, String> strMap = hgetAll(key);
+		if (clz == String.class) {
+			return (Map<String, T>) strMap;
+		}
+		Map<String, T> resultMap = new HashMap<String, T>();
+		if (strMap == null || strMap.isEmpty()) {
+			return resultMap;
+		}
+		for (Map.Entry<String, String> entry: strMap.entrySet()) {
+			resultMap.put(entry.getKey(), JSON.parseObject(entry.getValue(), clz));
+		}
+		return resultMap;
+	}
+
+	@Override
+	public <T>Map<String, T> hgetAll(String key, TypeReference<T> type) {
+		Map<String, String> strMap = hgetAll(key);
+		if (type.getType() == String.class) {
+			return (Map<String, T>) strMap;
+		}
+		Map<String, T> resultMap = new HashMap<String, T>();
+		if (strMap == null || strMap.isEmpty()) {
+			return resultMap;
+		}
+		for (Map.Entry<String, String> entry: strMap.entrySet()) {
+			resultMap.put(entry.getKey(), JSON.parseObject(entry.getValue(), type));
+		}
+		return resultMap;
+	}
+
+	@Override
+	public <T>boolean hmset(String key, Map<String, T> entries, long timeout) {
+		if (entries == null || entries.isEmpty()) {
+			return true;
+		}
+		Class<?> valClass = entries.values().toArray()[0].getClass();
+		if (valClass == String.class) {
+			jedisCluster.hmset(key, (Map<String, String>) entries);
+		} else {
+			Map<String, String> strMap = new HashMap<String, String>();
+			for (Map.Entry<String, T> entry: entries.entrySet()) {
+				strMap.put(entry.getKey(), JSON.toJSONString(entry.getValue()));
+			}
+			jedisCluster.hmset(key, strMap);
+		}
+		jedisCluster.expire(key, (int) timeout);
+		return true;
 	}
 
 	@Override
