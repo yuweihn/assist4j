@@ -5,6 +5,7 @@ import com.assist4j.data.cache.redis.jedis.JedisPoolConnFactory;
 import com.assist4j.data.cache.redis.jedis.JedisCache;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisNode;
@@ -74,6 +75,7 @@ public class JedisMsConf {
 		return template;
 	}
 
+	@ConditionalOnMissingBean(name = "redisCache")
 	@Bean(name = "redisCache")
 	public JedisCache redisCache(@Qualifier("redisTemplate") RedisTemplate<String, Object> template) {
 		JedisCache cache = new JedisCache();
