@@ -17,10 +17,7 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.scripting.support.ResourceScriptSource;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -225,6 +222,188 @@ public class JedisCache extends AbstractCache implements RedisCache {
 	@Override
 	public void remove(String key, String field) {
 		redisTemplate.opsForHash().delete(key, field);
+	}
+
+	@Override
+	public <T>boolean lpush(String key, T value, long timeout) {
+		String val = null;
+		if (value.getClass() != String.class) {
+			val = JSON.toJSONString(value);
+		} else {
+			val = (String) value;
+		}
+		redisTemplate.opsForList().leftPush(key, value);
+		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+		return true;
+	}
+
+	@Override
+	public <T>boolean lpush(String key, List<T> valList, long timeout) {
+		if (valList == null || valList.size() <= 0) {
+			return true;
+		}
+		List<String> strList = new ArrayList<String>();
+		for (T t: valList) {
+			strList.add(JSON.toJSONString(t));
+		}
+		redisTemplate.opsForList().leftPushAll(key, strList);
+		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+		return true;
+	}
+
+	@Override
+	public <T>boolean rpush(String key, T value, long timeout) {
+		String val = null;
+		if (value.getClass() != String.class) {
+			val = JSON.toJSONString(value);
+		} else {
+			val = (String) value;
+		}
+		redisTemplate.opsForList().rightPush(key, value);
+		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+		return true;
+	}
+
+	@Override
+	public <T>boolean rpush(String key, List<T> valList, long timeout) {
+		if (valList == null || valList.size() <= 0) {
+			return true;
+		}
+		List<String> strList = new ArrayList<String>();
+		for (T t: valList) {
+			strList.add(JSON.toJSONString(t));
+		}
+		redisTemplate.opsForList().rightPushAll(key, strList);
+		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+		return true;
+	}
+
+	@Override
+	public long lsize(String key) {
+		return redisTemplate.opsForList().size(key);
+	}
+
+	@Override
+	public String lindex(String key, long index) {
+		return (String) redisTemplate.opsForList().index(key, index);
+	}
+
+	@Override
+	public <T>T lindex(String key, long index, Class<T> clz) {
+		String val = lindex(key, index);
+		if (val == null) {
+			return null;
+		}
+		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
+	}
+
+	@Override
+	public <T>T lindex(String key, long index, TypeReference<T> type) {
+		String val = lindex(key, index);
+		if (val == null) {
+			return null;
+		}
+		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
+	}
+
+	@Override
+	public List<String> lrange(String key, long start, long end) {
+		List<?> list = redisTemplate.opsForList().range(key, start, end);
+		return (List<String>) list;
+	}
+
+	@Override
+	public <T>List<T> lrange(String key, long start, long end, Class<T> clz) {
+		List<String> strList = lrange(key, start, end);
+		if (clz == String.class) {
+			return (List<T>) strList;
+		}
+		List<T> resultList = new ArrayList<T>();
+		if (strList == null || strList.isEmpty()) {
+			return resultList;
+		}
+		for (String str: strList) {
+			resultList.add(JSON.parseObject(str, clz));
+		}
+		return resultList;
+	}
+
+	@Override
+	public <T>List<T> lrange(String key, long start, long end, TypeReference<T> type) {
+		List<String> strList = lrange(key, start, end);
+		if (type.getType() == String.class) {
+			return (List<T>) strList;
+		}
+		List<T> resultList = new ArrayList<T>();
+		if (strList == null || strList.isEmpty()) {
+			return resultList;
+		}
+		for (String str: strList) {
+			resultList.add(JSON.parseObject(str, type));
+		}
+		return resultList;
+	}
+
+	@Override
+	public void ltrim(String key, long start, long end) {
+		redisTemplate.opsForList().trim(key, start, end);
+	}
+
+	@Override
+	public <T>void lset(String key, long index, T value) {
+		String val = null;
+		if (value.getClass() != String.class) {
+			val = JSON.toJSONString(value);
+		} else {
+			val = (String) value;
+		}
+		redisTemplate.opsForList().set(key, index, val);
+	}
+
+	@Override
+	public String lpop(String key) {
+		return (String) redisTemplate.opsForList().leftPop(key);
+	}
+
+	@Override
+	public <T>T lpop(String key, Class<T> clz) {
+		String val = lpop(key);
+		if (val == null) {
+			return null;
+		}
+		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
+	}
+
+	@Override
+	public <T>T lpop(String key, TypeReference<T> type) {
+		String val = lpop(key);
+		if (val == null) {
+			return null;
+		}
+		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
+	}
+
+	@Override
+	public String rpop(String key) {
+		return (String) redisTemplate.opsForList().rightPop(key);
+	}
+
+	@Override
+	public <T>T rpop(String key, Class<T> clz) {
+		String val = rpop(key);
+		if (val == null) {
+			return null;
+		}
+		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
+	}
+
+	@Override
+	public <T>T rpop(String key, TypeReference<T> type) {
+		String val = rpop(key);
+		if (val == null) {
+			return null;
+		}
+		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
 	}
 
 	private boolean setNx(String key, String owner, long timeout) {
