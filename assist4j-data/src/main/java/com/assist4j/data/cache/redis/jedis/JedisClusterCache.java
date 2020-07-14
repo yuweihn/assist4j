@@ -201,6 +201,187 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		jedisCluster.hdel(key, field);
 	}
 
+	@Override
+	public <T>boolean lpush(String key, T value, long timeout) {
+		String val = null;
+		if (value.getClass() != String.class) {
+			val = JSON.toJSONString(value);
+		} else {
+			val = (String) value;
+		}
+		jedisCluster.lpush(key, val);
+		jedisCluster.expire(key, (int) timeout);
+		return true;
+	}
+
+	@Override
+	public <T>boolean lpush(String key, List<T> valList, long timeout) {
+		if (valList == null || valList.size() <= 0) {
+			return true;
+		}
+		List<String> strList = new ArrayList<String>();
+		for (T t: valList) {
+			strList.add(JSON.toJSONString(t));
+		}
+		jedisCluster.lpush(key, strList.toArray(new String[0]));
+		jedisCluster.expire(key, (int) timeout);
+		return true;
+	}
+
+	@Override
+	public <T>boolean rpush(String key, T value, long timeout) {
+		String val = null;
+		if (value.getClass() != String.class) {
+			val = JSON.toJSONString(value);
+		} else {
+			val = (String) value;
+		}
+		jedisCluster.rpush(key, val);
+		jedisCluster.expire(key, (int) timeout);
+		return true;
+	}
+
+	@Override
+	public <T>boolean rpush(String key, List<T> valList, long timeout) {
+		if (valList == null || valList.size() <= 0) {
+			return true;
+		}
+		List<String> strList = new ArrayList<String>();
+		for (T t: valList) {
+			strList.add(JSON.toJSONString(t));
+		}
+		jedisCluster.rpush(key, strList.toArray(new String[0]));
+		jedisCluster.expire(key, (int) timeout);
+		return true;
+	}
+
+	@Override
+	public long lsize(String key) {
+		return jedisCluster.llen(key);
+	}
+
+	@Override
+	public String lindex(String key, long index) {
+		return jedisCluster.lindex(key, index);
+	}
+
+	@Override
+	public <T>T lindex(String key, long index, Class<T> clz) {
+		String val = lindex(key, index);
+		if (val == null) {
+			return null;
+		}
+		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
+	}
+
+	@Override
+	public <T>T lindex(String key, long index, TypeReference<T> type) {
+		String val = lindex(key, index);
+		if (val == null) {
+			return null;
+		}
+		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
+	}
+
+	@Override
+	public List<String> lrange(String key, long start, long end) {
+		return jedisCluster.lrange(key, start, end);
+	}
+
+	@Override
+	public <T>List<T> lrange(String key, long start, long end, Class<T> clz) {
+		List<String> strList = lrange(key, start, end);
+		if (clz == String.class) {
+			return (List<T>) strList;
+		}
+		List<T> resultList = new ArrayList<T>();
+		if (strList == null || strList.isEmpty()) {
+			return resultList;
+		}
+		for (String str: strList) {
+			resultList.add(JSON.parseObject(str, clz));
+		}
+		return resultList;
+	}
+
+	@Override
+	public <T>List<T> lrange(String key, long start, long end, TypeReference<T> type) {
+		List<String> strList = lrange(key, start, end);
+		if (type.getType() == String.class) {
+			return (List<T>) strList;
+		}
+		List<T> resultList = new ArrayList<T>();
+		if (strList == null || strList.isEmpty()) {
+			return resultList;
+		}
+		for (String str: strList) {
+			resultList.add(JSON.parseObject(str, type));
+		}
+		return resultList;
+	}
+
+	@Override
+	public void ltrim(String key, long start, long end) {
+		jedisCluster.ltrim(key, start, end);
+	}
+
+	@Override
+	public <T>void lset(String key, long index, T value) {
+		String val = null;
+		if (value.getClass() != String.class) {
+			val = JSON.toJSONString(value);
+		} else {
+			val = (String) value;
+		}
+		jedisCluster.lset(key, index, val);
+	}
+
+	@Override
+	public String lpop(String key) {
+		return jedisCluster.lpop(key);
+	}
+
+	@Override
+	public <T>T lpop(String key, Class<T> clz) {
+		String val = lpop(key);
+		if (val == null) {
+			return null;
+		}
+		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
+	}
+
+	@Override
+	public <T>T lpop(String key, TypeReference<T> type) {
+		String val = lpop(key);
+		if (val == null) {
+			return null;
+		}
+		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
+	}
+
+	@Override
+	public String rpop(String key) {
+		return jedisCluster.rpop(key);
+	}
+
+	@Override
+	public <T>T rpop(String key, Class<T> clz) {
+		String val = rpop(key);
+		if (val == null) {
+			return null;
+		}
+		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
+	}
+
+	@Override
+	public <T>T rpop(String key, TypeReference<T> type) {
+		String val = rpop(key);
+		if (val == null) {
+			return null;
+		}
+		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
+	}
+
 	private boolean setNx(String key, String owner, long timeout) {
 		String res = jedisCluster.set(key, owner, "NX", "EX", (int) timeout);
 		return "OK".equalsIgnoreCase(res);
