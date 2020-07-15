@@ -411,6 +411,29 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
 	}
 
+	@Override
+	public <T>void sadd(String key, T... members) {
+		if (members == null || members.length <= 0) {
+			return;
+		}
+		List<String> strList = new ArrayList<String>();
+		for (T t: members) {
+			strList.add(JSON.toJSONString(t));
+		}
+		redisTemplate.opsForSet().add(key, strList.toArray(new String[0]));
+	}
+
+	@Override
+	public long ssize(String key) {
+		return redisTemplate.opsForSet().size(key);
+	}
+
+	@Override
+	public Set<String> sdiff(String key1, String key2) {
+		Set<?> set = redisTemplate.opsForSet().difference(key1, key2);
+		return (Set<String>) set;
+	}
+
 	private boolean setNx(String key, String owner, long timeout) {
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
