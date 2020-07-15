@@ -7,6 +7,7 @@ import com.assist4j.data.cache.MessageHandler;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -68,6 +69,13 @@ public interface RedisCache extends Cache {
 	String rpop(String key);
 	<T>T rpop(String key, Class<T> clz);
 	<T>T rpop(String key, TypeReference<T> type);
+
+	/**
+	 * timeout 过期时间(s)。
+	 */
+	<T>void sadd(String key, T... members);
+	long ssize(String key);
+	Set<String> sdiff(String key1, String key2);
 
 	String execute(String script, List<String> keyList, List<String> argList);
 }
