@@ -254,8 +254,11 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 	}
 
 	@Override
-	public <T>Set<T> sdiff(String key1, String key2) {
-		Set<String> strSet = jedisCluster.sdiff(key1, key2);
+	public <T>Set<T> sdiff(String key, Collection<String> otherKeys) {
+		List<String> keyList = new ArrayList<String>();
+		keyList.add(key);
+		keyList.addAll(otherKeys);
+		Set<String> strSet = jedisCluster.sdiff( keyList.toArray(new String[0]));
 		Set<T> tSet = new HashSet<T>();
 		if (strSet == null || strSet.isEmpty()) {
 			return tSet;
@@ -264,6 +267,105 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			tSet.add((T) deserialize(str));
 		}
 		return tSet;
+	}
+
+	@Override
+	public void sdiffStore(String key, Collection<String> otherKeys, String destKey) {
+		List<String> keyList = new ArrayList<String>();
+		keyList.add(key);
+		keyList.addAll(otherKeys);
+		jedisCluster.sdiffstore(destKey, keyList.toArray(new String[0]));
+	}
+
+	@Override
+	public <T>Set<T> sinter(String key, Collection<String> otherKeys) {
+		List<String> keyList = new ArrayList<String>();
+		keyList.add(key);
+		keyList.addAll(otherKeys);
+		Set<String> strSet = jedisCluster.sinter(keyList.toArray(new String[0]));
+		Set<T> tSet = new HashSet<T>();
+		if (strSet == null || strSet.isEmpty()) {
+			return tSet;
+		}
+		for (String str: strSet) {
+			tSet.add((T) deserialize(str));
+		}
+		return tSet;
+	}
+
+	@Override
+	public void sinterStore(String key, Collection<String> otherKeys, String destKey) {
+		int len = otherKeys.size();
+		String[] arr = new String[len + 1];
+		arr[0] = key;
+		int i = 1;
+		for (String otherKey: otherKeys) {
+			arr[i++] = otherKey;
+		}
+		jedisCluster.sinterstore(destKey, arr);
+	}
+
+	@Override
+	public <T>Set<T> sunion(String key, Collection<String> otherKeys) {
+		List<String> keyList = new ArrayList<String>();
+		keyList.add(key);
+		keyList.addAll(otherKeys);
+		Set<String> strSet = jedisCluster.sunion(keyList.toArray(new String[0]));
+		Set<T> tSet = new HashSet<T>();
+		if (strSet == null || strSet.isEmpty()) {
+			return tSet;
+		}
+		for (String str: strSet) {
+			tSet.add((T) deserialize(str));
+		}
+		return tSet;
+	}
+
+	@Override
+	public void sunionStore(String key, Collection<String> otherKeys, String destKey) {
+		int len = otherKeys.size();
+		String[] arr = new String[len + 1];
+		arr[0] = key;
+		int i = 1;
+		for (String otherKey: otherKeys) {
+			arr[i++] = otherKey;
+		}
+		jedisCluster.sunionstore(destKey, arr);
+	}
+
+	@Override
+	public <T>boolean sisMember(String key, T member) {
+		return jedisCluster.sismember(key, serialize(member));
+	}
+
+	@Override
+	public <T>Set<T> smembers(String key) {
+		Set<String> strSet = jedisCluster.smembers(key);
+		Set<T> tSet = new HashSet<T>();
+		if (strSet == null || strSet.isEmpty()) {
+			return tSet;
+		}
+		for (String str: strSet) {
+			tSet.add((T) deserialize(str));
+		}
+		return tSet;
+	}
+
+	@Override
+	public <T>boolean smove(String sourceKey, String destKey, T member) {
+		return jedisCluster.smove(sourceKey, destKey, serialize(member)) > 0;
+	}
+
+	@Override
+	public <T>boolean sremove(String key, Collection<T> members) {
+		if (members == null || members.size() <= 0) {
+			return false;
+		}
+		List<String> strList = new ArrayList<String>();
+		for (T t: members) {
+			strList.add(serialize(t));
+		}
+		return jedisCluster.srem(key, strList.toArray(new String[0])) > 0;
 	}
 
 	private boolean setNx(String key, Object owner, long timeout) {
