@@ -27,12 +27,16 @@ public class DefaultRedisSerializer implements RedisSerializer<Object> {
 			throw new SerializationException(e.getMessage(), e);
 		} finally {
 			try {
-				oos.close();
+				if (oos != null) {
+					oos.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			try {
-				baos.close();
+				if (baos != null) {
+					baos.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -54,12 +58,16 @@ public class DefaultRedisSerializer implements RedisSerializer<Object> {
 			throw new SerializationException(e.getMessage(), e);
 		} finally {
 			try {
-				ois.close();
+				if (ois != null) {
+					ois.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			try {
-				bais.close();
+				if (bais != null) {
+					bais.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
