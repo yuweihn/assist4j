@@ -3,14 +3,13 @@ package com.assist4j.data.cache.redis.jedis;
 
 import java.util.*;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import com.assist4j.data.cache.AbstractCache;
 import com.assist4j.data.cache.MessageHandler;
 import com.assist4j.data.cache.redis.RedisCache;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.scripting.support.ResourceScriptSource;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPubSub;
@@ -21,6 +20,7 @@ import redis.clients.jedis.JedisPubSub;
  */
 public class JedisClusterCache extends AbstractCache implements RedisCache {
 	protected JedisCluster jedisCluster;
+	protected RedisSerializer<Object> redisSerializer;
 
 
 	public JedisClusterCache() {
@@ -32,6 +32,22 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		this.jedisCluster = jedisCluster;
 	}
 
+	public void setRedisSerializer(RedisSerializer<Object> redisSerializer) {
+		this.redisSerializer = redisSerializer;
+	}
+
+	private String serialize(Object o) {
+		if (o == null) {
+			return null;
+		}
+		return new String(redisSerializer.serialize(o));
+	}
+	private <T>T deserialize(String str) {
+		if (str == null) {
+			return null;
+		}
+		return (T) redisSerializer.deserialize(str.getBytes());
+	}
 
 	@Override
 	public void publish(String channel, String message) {
@@ -39,7 +55,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 	}
 
 	@Override
-	public void subscribe(final String channel, final MessageHandler handler) {
+	public void subscribe(String channel, final MessageHandler handler) {
 		new Thread() {
 			@Override
 			public void run() {
@@ -70,38 +86,13 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			throw new RuntimeException("Invalid parameter[timeout].");
 		}
 
-		String res = null;
-		if (value.getClass() == String.class) {
-			res = jedisCluster.setex(key, (int) timeout, (String) value);
-		} else {
-			res = jedisCluster.setex(key, (int) timeout, JSON.toJSONString(value));
-		}
+		String res = jedisCluster.setex(key, (int) timeout, serialize(value));
 		return "OK".equalsIgnoreCase(res);
 	}
 
 	@Override
-	public String get(String key) {
-		return jedisCluster.get(key);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T get(String key, Class<T> clz) {
-		String val = get(key);
-		if (val == null) {
-			return null;
-		}
-		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T get(String key, TypeReference<T> type) {
-		String val = get(key);
-		if (val == null) {
-			return null;
-		}
-		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
+	public <T>T get(String key) {
+		return (T) deserialize(jedisCluster.get(key));
 	}
 
 	@Override
@@ -111,75 +102,9 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>boolean hset(String key, String field, T value, long timeout) {
-		String val = null;
-		if (value.getClass() != String.class) {
-			val = JSON.toJSONString(value);
-		} else {
-			val = (String) value;
-		}
-		jedisCluster.hset(key, field, val);
+		jedisCluster.hset(key, field, serialize(value));
 		jedisCluster.expire(key, (int) timeout);
 		return true;
-	}
-
-	@Override
-	public String hget(String key, String field) {
-		return jedisCluster.hget(key, field);
-	}
-
-	@Override
-	public <T>T hget(String key, String field, Class<T> clz) {
-		String val = hget(key, field);
-		if (val == null) {
-			return null;
-		}
-		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
-	}
-
-	@Override
-	public <T>T hget(String key, String field, TypeReference<T> type) {
-		String val = hget(key, field);
-		if (val == null) {
-			return null;
-		}
-		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
-	}
-
-	@Override
-	public Map<String, String> hgetAll(String key) {
-		return jedisCluster.hgetAll(key);
-	}
-
-	@Override
-	public <T>Map<String, T> hgetAll(String key, Class<T> clz) {
-		Map<String, String> strMap = hgetAll(key);
-		if (clz == String.class) {
-			return (Map<String, T>) strMap;
-		}
-		Map<String, T> resultMap = new HashMap<String, T>();
-		if (strMap == null || strMap.isEmpty()) {
-			return resultMap;
-		}
-		for (Map.Entry<String, String> entry: strMap.entrySet()) {
-			resultMap.put(entry.getKey(), JSON.parseObject(entry.getValue(), clz));
-		}
-		return resultMap;
-	}
-
-	@Override
-	public <T>Map<String, T> hgetAll(String key, TypeReference<T> type) {
-		Map<String, String> strMap = hgetAll(key);
-		if (type.getType() == String.class) {
-			return (Map<String, T>) strMap;
-		}
-		Map<String, T> resultMap = new HashMap<String, T>();
-		if (strMap == null || strMap.isEmpty()) {
-			return resultMap;
-		}
-		for (Map.Entry<String, String> entry: strMap.entrySet()) {
-			resultMap.put(entry.getKey(), JSON.parseObject(entry.getValue(), type));
-		}
-		return resultMap;
 	}
 
 	@Override
@@ -187,18 +112,31 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		if (entries == null || entries.isEmpty()) {
 			return true;
 		}
-		Class<?> valClass = entries.values().toArray()[0].getClass();
-		if (valClass == String.class) {
-			jedisCluster.hmset(key, (Map<String, String>) entries);
-		} else {
-			Map<String, String> strMap = new HashMap<String, String>();
-			for (Map.Entry<String, T> entry: entries.entrySet()) {
-				strMap.put(entry.getKey(), JSON.toJSONString(entry.getValue()));
-			}
-			jedisCluster.hmset(key, strMap);
+		Map<String, String> strMap = new HashMap<String, String>();
+		for (Map.Entry<String, T> entry: entries.entrySet()) {
+			strMap.put(entry.getKey(), serialize(entry.getValue()));
 		}
+		jedisCluster.hmset(key, strMap);
 		jedisCluster.expire(key, (int) timeout);
 		return true;
+	}
+
+	@Override
+	public <T>T hget(String key, String field) {
+		return (T) deserialize(jedisCluster.hget(key, field));
+	}
+
+	@Override
+	public <T>Map<String, T> hgetAll(String key) {
+		Map<String, String> strMap = jedisCluster.hgetAll(key);
+		Map<String, T> resMap = new HashMap<String, T>();
+		if (strMap == null || strMap.isEmpty()) {
+			return resMap;
+		}
+		for (Map.Entry<String, String> strEntry: strMap.entrySet()) {
+			resMap.put(strEntry.getKey(), deserialize(strEntry.getValue()));
+		}
+		return resMap;
 	}
 
 	@Override
@@ -208,13 +146,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>boolean lpush(String key, T value, long timeout) {
-		String val = null;
-		if (value.getClass() != String.class) {
-			val = JSON.toJSONString(value);
-		} else {
-			val = (String) value;
-		}
-		jedisCluster.lpush(key, val);
+		jedisCluster.lpush(key, serialize(value));
 		jedisCluster.expire(key, (int) timeout);
 		return true;
 	}
@@ -226,7 +158,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		}
 		List<String> strList = new ArrayList<String>();
 		for (T t: valList) {
-			strList.add(JSON.toJSONString(t));
+			strList.add(serialize(t));
 		}
 		jedisCluster.lpush(key, strList.toArray(new String[0]));
 		jedisCluster.expire(key, (int) timeout);
@@ -235,13 +167,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>boolean rpush(String key, T value, long timeout) {
-		String val = null;
-		if (value.getClass() != String.class) {
-			val = JSON.toJSONString(value);
-		} else {
-			val = (String) value;
-		}
-		jedisCluster.rpush(key, val);
+		jedisCluster.rpush(key, serialize(value));
 		jedisCluster.expire(key, (int) timeout);
 		return true;
 	}
@@ -253,7 +179,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		}
 		List<String> strList = new ArrayList<String>();
 		for (T t: valList) {
-			strList.add(JSON.toJSONString(t));
+			strList.add(serialize(t));
 		}
 		jedisCluster.rpush(key, strList.toArray(new String[0]));
 		jedisCluster.expire(key, (int) timeout);
@@ -271,58 +197,16 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 	}
 
 	@Override
-	public <T>T lindex(String key, long index, Class<T> clz) {
-		String val = lindex(key, index);
-		if (val == null) {
-			return null;
-		}
-		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
-	}
-
-	@Override
-	public <T>T lindex(String key, long index, TypeReference<T> type) {
-		String val = lindex(key, index);
-		if (val == null) {
-			return null;
-		}
-		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
-	}
-
-	@Override
-	public List<String> lrange(String key, long start, long end) {
-		return jedisCluster.lrange(key, start, end);
-	}
-
-	@Override
-	public <T>List<T> lrange(String key, long start, long end, Class<T> clz) {
-		List<String> strList = lrange(key, start, end);
-		if (clz == String.class) {
-			return (List<T>) strList;
-		}
-		List<T> resultList = new ArrayList<T>();
-		if (strList == null || strList.isEmpty()) {
-			return resultList;
+	public <T>List<T> lrange(String key, long start, long end) {
+		List<String> strList = jedisCluster.lrange(key, start, end);
+		List<T> tList = new ArrayList<T>();
+		if (strList == null || strList.size() <= 0) {
+			return tList;
 		}
 		for (String str: strList) {
-			resultList.add(JSON.parseObject(str, clz));
+			tList.add(deserialize(str));
 		}
-		return resultList;
-	}
-
-	@Override
-	public <T>List<T> lrange(String key, long start, long end, TypeReference<T> type) {
-		List<String> strList = lrange(key, start, end);
-		if (type.getType() == String.class) {
-			return (List<T>) strList;
-		}
-		List<T> resultList = new ArrayList<T>();
-		if (strList == null || strList.isEmpty()) {
-			return resultList;
-		}
-		for (String str: strList) {
-			resultList.add(JSON.parseObject(str, type));
-		}
-		return resultList;
+		return tList;
 	}
 
 	@Override
@@ -332,97 +216,70 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>void lset(String key, long index, T value) {
-		String val = null;
-		if (value.getClass() != String.class) {
-			val = JSON.toJSONString(value);
-		} else {
-			val = (String) value;
-		}
-		jedisCluster.lset(key, index, val);
+		jedisCluster.lset(key, index, serialize(value));
 	}
 
 	@Override
-	public String lpop(String key) {
-		return jedisCluster.lpop(key);
+	public <T>T lpop(String key) {
+		return deserialize(jedisCluster.lpop(key));
 	}
 
 	@Override
-	public <T>T lpop(String key, Class<T> clz) {
-		String val = lpop(key);
-		if (val == null) {
-			return null;
-		}
-		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
+	public <T>T rpop(String key) {
+		return deserialize(jedisCluster.rpop(key));
 	}
 
 	@Override
-	public <T>T lpop(String key, TypeReference<T> type) {
-		String val = lpop(key);
-		if (val == null) {
-			return null;
-		}
-		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
+	public <T>void sadd(String key, T t, long timeout) {
+		jedisCluster.sadd(key, serialize(t));
+		jedisCluster.expire(key, (int) timeout);
 	}
 
 	@Override
-	public String rpop(String key) {
-		return jedisCluster.rpop(key);
-	}
-
-	@Override
-	public <T>T rpop(String key, Class<T> clz) {
-		String val = rpop(key);
-		if (val == null) {
-			return null;
-		}
-		return clz == String.class ? (T) val : JSON.parseObject(val, clz);
-	}
-
-	@Override
-	public <T>T rpop(String key, TypeReference<T> type) {
-		String val = rpop(key);
-		if (val == null) {
-			return null;
-		}
-		return type.getType() == String.class ? (T) val : JSON.parseObject(val, type);
-	}
-
-	@Override
-	public <T>void sadd(String key, T... members) {
-		if (members == null || members.length <= 0) {
+	public <T>void sadd(String key, List<T> valList, long timeout) {
+		if (valList == null || valList.size() <= 0) {
 			return;
 		}
 		List<String> strList = new ArrayList<String>();
-		for (T t: members) {
-			strList.add(JSON.toJSONString(t));
+		for (T t: valList) {
+			strList.add(serialize(t));
 		}
 		jedisCluster.sadd(key, strList.toArray(new String[0]));
+		jedisCluster.expire(key, (int) timeout);
 	}
 
 	@Override
-	public long ssize(String key) {
+	public long slen(String key) {
 		return jedisCluster.scard(key);
 	}
 
 	@Override
-	public Set<String> sdiff(String key1, String key2) {
-		return jedisCluster.sdiff(key1, key2);
+	public <T>Set<T> sdiff(String key1, String key2) {
+		Set<String> strSet = jedisCluster.sdiff(key1, key2);
+		Set<T> tSet = new HashSet<T>();
+		if (strSet == null || strSet.isEmpty()) {
+			return tSet;
+		}
+		for (String str: strSet) {
+			tSet.add(deserialize(str));
+		}
+		return tSet;
 	}
 
-	private boolean setNx(String key, String owner, long timeout) {
-		String res = jedisCluster.set(key, owner, "NX", "EX", (int) timeout);
+	private boolean setNx(String key, Object owner, long timeout) {
+		String res = jedisCluster.set(key, serialize(owner), "NX", "EX", (int) timeout);
 		return "OK".equalsIgnoreCase(res);
 	}
 	@SuppressWarnings("unused")
-	private boolean setXx(String key, String owner, long timeout) {
-		String res = jedisCluster.set(key, owner, "XX", "EX", (int) timeout);
+	private boolean setXx(String key, Object owner, long timeout) {
+		String res = jedisCluster.set(key, serialize(owner), "XX", "EX", (int) timeout);
 		return "OK".equalsIgnoreCase(res);
 	}
-	private boolean setXxEquals(String key, String owner, long timeout) {
+	private boolean setXxEquals(String key, Object owner, long timeout) {
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
 		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockXxEquals.lua")));
-		Object result = jedisCluster.eval(redisScript.getScriptAsString(), Collections.singletonList(key), Arrays.asList(owner, "" + timeout));
+		Object result = jedisCluster.eval(redisScript.getScriptAsString(), Collections.singletonList(key), Arrays.asList(serialize(owner), "" + timeout));
 		return result != null && "OK".equalsIgnoreCase(result.toString());
 	}
 
@@ -433,13 +290,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>boolean lock(String key, T owner, long timeout, boolean reentrant) {
-		String val = null;
-		if (owner.getClass() == String.class) {
-			val = (String) owner;
-		} else {
-			val = JSON.toJSONString(owner);
-		}
-		return reentrant && setXxEquals(key, val, timeout) || setNx(key, val, timeout);
+		return reentrant && setXxEquals(key, owner, timeout) || setNx(key, owner, timeout);
 	}
 
 	@Override
@@ -447,12 +298,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		if (!contains(key)) {
 			return true;
 		}
-		String val = null;
-		if (owner.getClass() == String.class) {
-			val = (String) owner;
-		} else {
-			val = JSON.toJSONString(owner);
-		}
+		String val = serialize(owner);
 		DefaultRedisScript<Long> redisScript = new DefaultRedisScript<Long>();
 		redisScript.setResultType(Long.class);
 		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/releaseLock.lua")));
