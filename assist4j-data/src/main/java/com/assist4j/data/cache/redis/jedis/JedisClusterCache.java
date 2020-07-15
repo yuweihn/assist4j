@@ -60,6 +60,11 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 	}
 
 	@Override
+	public void expire(String key, long timeout) {
+		jedisCluster.expire(key, (int) timeout);
+	}
+
+	@Override
 	public <T> boolean put(String key, T value, long timeout) {
 		if (timeout <= 0) {
 			throw new RuntimeException("Invalid parameter[timeout].");

@@ -83,6 +83,11 @@ public class JedisCache extends AbstractCache implements RedisCache {
 	}
 
 	@Override
+	public void expire(String key, long timeout) {
+		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+	}
+
+	@Override
 	public <T> boolean put(String key, T value, long timeout) {
 		if (timeout <= 0) {
 			throw new RuntimeException("Invalid parameter[timeout].");
