@@ -16,6 +16,12 @@ public interface Cache {
 
 	/**
 	 * @param key
+	 * @param timeout 过期时间(s)。
+	 */
+	void expire(String key, long timeout);
+
+	/**
+	 * @param key
 	 * @param value
 	 * @param timeout 过期时间(s)。
 	 * @return
