@@ -1,6 +1,7 @@
 package com.assist4j.data.cache.redis;
 
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,7 +60,16 @@ public interface RedisCache extends Cache {
 	<T>void sadd(String key, T value, long timeout);
 	<T>void sadd(String key, List<T> valList, long timeout);
 	long slen(String key);
-	<T>Set<T> sdiff(String key1, String key2);
+	<T>Set<T> sdiff(String key, Collection<String> otherKeys);
+	void sdiffStore(String key, Collection<String> otherKeys, String destKey);
+	<T>Set<T> sinter(String key, Collection<String> otherKeys);
+	void sinterStore(String key, Collection<String> otherKeys, String destKey);
+	<T>Set<T> sunion(String key, Collection<String> otherKeys);
+	void sunionStore(String key, Collection<String> otherKeys, String destKey);
+	<T>boolean sisMember(String key, T member);
+	<T>Set<T> smembers(String key);
+	<T>boolean smove(String sourceKey, String destKey, T member);
+	<T>boolean sremove(String key, Collection<T> members);
 
 	String execute(String script, List<String> keyList, List<String> argList);
 }
