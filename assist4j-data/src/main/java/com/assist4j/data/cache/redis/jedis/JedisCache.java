@@ -228,9 +228,60 @@ public class JedisCache extends AbstractCache implements RedisCache {
 	}
 
 	@Override
-	public <T>Set<T> sdiff(String key1, String key2) {
-		Set<?> set = redisTemplate.opsForSet().difference(key1, key2);
+	public <T>Set<T> sdiff(String key, Collection<String> otherKeys) {
+		Set<?> set = redisTemplate.opsForSet().difference(key, otherKeys);
 		return (Set<T>) set;
+	}
+
+	@Override
+	public void sdiffStore(String key, Collection<String> otherKeys, String destKey) {
+		redisTemplate.opsForSet().differenceAndStore(key, otherKeys, destKey);
+	}
+
+	@Override
+	public <T>Set<T> sinter(String key, Collection<String> otherKeys) {
+		Set<?> set = redisTemplate.opsForSet().intersect(key, otherKeys);
+		return (Set<T>) set;
+	}
+
+	@Override
+	public void sinterStore(String key, Collection<String> otherKeys, String destKey) {
+		redisTemplate.opsForSet().intersectAndStore(key, otherKeys, destKey);
+	}
+
+	@Override
+	public <T>Set<T> sunion(String key, Collection<String> otherKeys) {
+		Set<?> set = redisTemplate.opsForSet().union(key, otherKeys);
+		return (Set<T>) set;
+	}
+
+	@Override
+	public void sunionStore(String key, Collection<String> otherKeys, String destKey) {
+		redisTemplate.opsForSet().unionAndStore(key, otherKeys, destKey);
+	}
+
+	@Override
+	public <T>boolean sisMember(String key, T member) {
+		return redisTemplate.opsForSet().isMember(key, member);
+	}
+
+	@Override
+	public <T>Set<T> smembers(String key) {
+		Set<?> set = redisTemplate.opsForSet().members(key);
+		return (Set<T>) set;
+	}
+
+	@Override
+	public <T>boolean smove(String sourceKey, String destKey, T member) {
+		return redisTemplate.opsForSet().move(sourceKey, member, destKey);
+	}
+
+	@Override
+	public <T>boolean sremove(String key, Collection<T> members) {
+		if (members == null || members.size() <= 0) {
+			return false;
+		}
+		return redisTemplate.opsForSet().remove(key, members.toArray()) > 0;
 	}
 
 	private <T>boolean setNx(String key, T owner, long timeout) {
