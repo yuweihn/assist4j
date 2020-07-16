@@ -35,7 +35,7 @@ public interface Cache {
 	 */
 	void remove(String key);
 
-	<T>boolean lock(String key, T owner, long timeout);
+	boolean lock(String key, String owner, long timeout);
 	/**
 	 * @param key
 	 * @param owner
@@ -43,6 +43,6 @@ public interface Cache {
 	 * @param reentrant   是否可重入
 	 * @return
 	 */
-	<T>boolean lock(String key, T owner, long timeout, boolean reentrant);
-	<T>boolean unlock(String key, T owner);
+	boolean lock(String key, String owner, long timeout, boolean reentrant);
+	boolean unlock(String key, String owner);
 }
