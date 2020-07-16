@@ -85,11 +85,25 @@ public class JedisMsConf {
 		return template;
 	}
 
+	@Bean(name = "stringValueRedisTemplate")
+	public RedisTemplate<String, Object> stringValueRedisTemplate(
+			@Qualifier("jedisConnectionFactory") RedisConnectionFactory connFactory) {
+		RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
+		template.setConnectionFactory(connFactory);
+		template.setKeySerializer(new StringRedisSerializer());
+		template.setValueSerializer(new StringRedisSerializer());
+		template.setEnableDefaultSerializer(true);
+//		template.setEnableTransactionSupport(true);
+		return template;
+	}
+
 	@ConditionalOnMissingBean(name = "redisCache")
 	@Bean(name = "redisCache")
-	public JedisCache redisCache(@Qualifier("redisTemplate") RedisTemplate<String, Object> template) {
+	public JedisCache redisCache(@Qualifier("redisTemplate") RedisTemplate<String, Object> template
+			, @Qualifier("stringValueRedisTemplate") RedisTemplate<String, Object> stringValueRedisTemplate) {
 		JedisCache cache = new JedisCache();
 		cache.setRedisTemplate(template);
+		cache.setStringValueRedisTemplate(stringValueRedisTemplate);
 		return cache;
 	}
 }
