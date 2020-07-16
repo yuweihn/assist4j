@@ -299,7 +299,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 	@Override
 	public <T>void zadd(String key, Map<T, Double> memScore, long timeout) {
 		Set<ZSetOperations.TypedTuple<Object>> tuples = new HashSet<ZSetOperations.TypedTuple<Object>>();
-		for (Map.Entry<T, Double> entry: memScore.entrySet()) {
+		for (final Map.Entry<T, Double> entry: memScore.entrySet()) {
 			tuples.add(new ZSetOperations.TypedTuple<Object>() {
 				@Override
 				public int compareTo(ZSetOperations.TypedTuple<Object> o) {
