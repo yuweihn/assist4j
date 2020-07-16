@@ -71,5 +71,14 @@ public interface RedisCache extends Cache {
 	<T>boolean smove(String sourceKey, String destKey, T member);
 	<T>boolean sremove(String key, Collection<T> members);
 
+	/**
+	 * timeout 过期时间(s)。
+	 */
+	<T>void zadd(String key, T value, double score, long timeout);
+	<T>void zadd(String key, Map<T, Double> memScore, long timeout);
+	long zlen(String key);
+	long zcount(String key, double min, double max);
+	<T>void zincrby(String key, T member, double increment);
+
 	String execute(String script, List<String> keyList, List<String> argList);
 }
