@@ -258,7 +258,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		List<String> keyList = new ArrayList<String>();
 		keyList.add(key);
 		keyList.addAll(otherKeys);
-		Set<String> strSet = jedisCluster.sdiff( keyList.toArray(new String[0]));
+		Set<String> strSet = jedisCluster.sdiff(keyList.toArray(new String[0]));
 		Set<T> tSet = new HashSet<T>();
 		if (strSet == null || strSet.isEmpty()) {
 			return tSet;
@@ -403,19 +403,19 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 	}
 
 	private boolean setNx(String key, String owner, long timeout) {
-		String res = jedisCluster.set(key, owner, "NX", "EX", (int) timeout);
+		String res = jedisCluster.set(key, serialize(owner), "NX", "EX", (int) timeout);
 		return "OK".equalsIgnoreCase(res);
 	}
 	@SuppressWarnings("unused")
 	private boolean setXx(String key, String owner, long timeout) {
-		String res = jedisCluster.set(key, owner, "XX", "EX", (int) timeout);
+		String res = jedisCluster.set(key, serialize(owner), "XX", "EX", (int) timeout);
 		return "OK".equalsIgnoreCase(res);
 	}
 	private boolean setXxEquals(String key, String owner, long timeout) {
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
 		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockXxEquals.lua")));
-		Object result = jedisCluster.eval(redisScript.getScriptAsString(), Collections.singletonList(key), Arrays.asList(owner, "" + timeout));
+		Object result = jedisCluster.eval(redisScript.getScriptAsString(), Collections.singletonList(key), Arrays.asList(serialize(owner), "" + timeout));
 		return result != null && "OK".equalsIgnoreCase(result.toString());
 	}
 
@@ -437,7 +437,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		DefaultRedisScript<Long> redisScript = new DefaultRedisScript<Long>();
 		redisScript.setResultType(Long.class);
 		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/releaseLock.lua")));
-		Object result = jedisCluster.eval(redisScript.getScriptAsString(), Collections.singletonList(key), Collections.singletonList(owner));
+		Object result = jedisCluster.eval(redisScript.getScriptAsString(), Collections.singletonList(key), Collections.singletonList(serialize(owner)));
 		return result != null && "1".equals(result.toString());
 	}
 
