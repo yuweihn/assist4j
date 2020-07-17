@@ -5,6 +5,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -55,7 +56,7 @@ public class DefaultRedisSerializer implements RedisSerializer<Object> {
 			ois = new ObjectInputStream(bais);
 			return ois.readObject();
 		} catch (Exception e) {
-			throw new SerializationException(e.getMessage(), e);
+			return new String(bytes, StandardCharsets.UTF_8);
 		} finally {
 			try {
 				if (ois != null) {
