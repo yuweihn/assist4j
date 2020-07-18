@@ -1,7 +1,6 @@
 package com.assist4j.data.springboot.jedis;
 
 
-import com.assist4j.data.cache.DefaultRedisSerializer;
 import com.assist4j.data.cache.redis.jedis.JedisPoolConnFactory;
 import com.assist4j.data.cache.redis.jedis.JedisCache;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,7 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -59,18 +57,12 @@ public class JedisConf {
 		return factory;
 	}
 
-	@Bean(name = "redisSerializer")
-	public RedisSerializer<Object> redisSerializer() {
-		return new DefaultRedisSerializer();
-	}
-
 	@Bean(name = "redisTemplate")
-	public RedisTemplate<String, Object> redisTemplate(@Qualifier("jedisConnectionFactory") RedisConnectionFactory connFactory
-			, @Qualifier("redisSerializer") RedisSerializer<Object> redisSerializer) {
+	public RedisTemplate<String, Object> redisTemplate(@Qualifier("jedisConnectionFactory") RedisConnectionFactory connFactory) {
 		RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
 		template.setConnectionFactory(connFactory);
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setValueSerializer(redisSerializer);
+		template.setValueSerializer(new StringRedisSerializer());
 		template.setEnableDefaultSerializer(true);
 //		template.setEnableTransactionSupport(true);
 		return template;

@@ -22,7 +22,7 @@ public abstract class AbstractCache implements Cache {
 		if (value == null) {
 			return false;
 		}
-		int oldSize = parseValueSize(get(key));
+		int oldSize = parseValueSize((String) get(key));
 		List<String> valList = split(value, maxLength);
 		int newSize = valList.size();
 		boolean b = put(key, "" + newSize, timeout);
@@ -38,7 +38,7 @@ public abstract class AbstractCache implements Cache {
 
 	@Override
 	public String getSplit(String key) {
-		int size = parseValueSize(get(key));
+		int size = parseValueSize((String) get(key));
 		if (size <= 0) {
 			remove(key);
 			return null;
@@ -54,7 +54,7 @@ public abstract class AbstractCache implements Cache {
 
 	@Override
 	public void removeSplit(String key) {
-		int size = parseValueSize(get(key));
+		int size = parseValueSize((String) get(key));
 		if (size <= 0) {
 			remove(key);
 			return;

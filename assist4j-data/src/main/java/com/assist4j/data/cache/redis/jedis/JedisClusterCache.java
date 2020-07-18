@@ -36,7 +36,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 	}
 
 	@Override
-	public void subscribe(String channel, final MessageHandler handler) {
+	public void subscribe(final String channel, final MessageHandler handler) {
 		new Thread() {
 			@Override
 			public void run() {
@@ -115,7 +115,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return resMap;
 		}
 		for (Map.Entry<String, String> strEntry: strMap.entrySet()) {
-			resMap.put(strEntry.getKey(), deserialize(strEntry.getValue()));
+			resMap.put(strEntry.getKey(), (T) deserialize(strEntry.getValue()));
 		}
 		return resMap;
 	}
@@ -185,7 +185,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return tList;
 		}
 		for (String str: strList) {
-			tList.add(deserialize(str));
+			tList.add((T) deserialize(str));
 		}
 		return tList;
 	}
@@ -245,7 +245,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (String str: strSet) {
-			tSet.add(deserialize(str));
+			tSet.add((T) deserialize(str));
 		}
 		return tSet;
 	}
@@ -269,7 +269,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (String str: strSet) {
-			tSet.add(deserialize(str));
+			tSet.add((T) deserialize(str));
 		}
 		return tSet;
 	}
@@ -297,7 +297,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (String str: strSet) {
-			tSet.add(deserialize(str));
+			tSet.add((T) deserialize(str));
 		}
 		return tSet;
 	}
@@ -327,7 +327,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (String str: strSet) {
-			tSet.add(deserialize(str));
+			tSet.add((T) deserialize(str));
 		}
 		return tSet;
 	}

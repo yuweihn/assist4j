@@ -140,7 +140,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return resMap;
 		}
 		for (Map.Entry<String, String> strEntry: strMap.entrySet()) {
-			resMap.put(strEntry.getKey(), deserialize(strEntry.getValue()));
+			resMap.put(strEntry.getKey(), (T) deserialize(strEntry.getValue()));
 		}
 		return resMap;
 	}
@@ -210,7 +210,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return tList;
 		}
 		for (Object str: strList) {
-			tList.add(deserialize((String) str));
+			tList.add((T) deserialize((String) str));
 		}
 		return tList;
 	}
@@ -267,7 +267,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (Object str: strSet) {
-			tSet.add(deserialize((String) str));
+			tSet.add((T) deserialize((String) str));
 		}
 		return tSet;
 	}
@@ -285,7 +285,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (Object str: strSet) {
-			tSet.add(deserialize((String) str));
+			tSet.add((T) deserialize((String) str));
 		}
 		return tSet;
 	}
@@ -303,7 +303,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (Object str: strSet) {
-			tSet.add(deserialize((String) str));
+			tSet.add((T) deserialize((String) str));
 		}
 		return tSet;
 	}
@@ -326,7 +326,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (Object str: strSet) {
-			tSet.add(deserialize((String) str));
+			tSet.add((T) deserialize((String) str));
 		}
 		return tSet;
 	}
@@ -357,7 +357,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 	@Override
 	public <T>void zadd(String key, Map<T, Double> memScore, long timeout) {
 		Set<ZSetOperations.TypedTuple<Object>> tuples = new HashSet<ZSetOperations.TypedTuple<Object>>();
-		for (Map.Entry<T, Double> entry: memScore.entrySet()) {
+		for (final Map.Entry<T, Double> entry: memScore.entrySet()) {
 			tuples.add(new ZSetOperations.TypedTuple<Object>() {
 				@Override
 				public int compareTo(ZSetOperations.TypedTuple<Object> o) {
