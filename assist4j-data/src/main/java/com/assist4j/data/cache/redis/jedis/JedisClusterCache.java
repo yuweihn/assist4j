@@ -9,7 +9,6 @@ import com.assist4j.data.cache.redis.RedisCache;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.scripting.support.ResourceScriptSource;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPubSub;
@@ -20,7 +19,6 @@ import redis.clients.jedis.JedisPubSub;
  */
 public class JedisClusterCache extends AbstractCache implements RedisCache {
 	protected JedisCluster jedisCluster;
-	protected RedisSerializer<Object> redisSerializer;
 
 
 	public JedisClusterCache() {
@@ -32,30 +30,13 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		this.jedisCluster = jedisCluster;
 	}
 
-	public void setRedisSerializer(RedisSerializer<Object> redisSerializer) {
-		this.redisSerializer = redisSerializer;
-	}
-
-	private String serialize(Object o) {
-		if (o == null) {
-			return null;
-		}
-		return new String(redisSerializer.serialize(o));
-	}
-	private <T>T deserialize(String str) {
-		if (str == null) {
-			return null;
-		}
-		return (T) redisSerializer.deserialize(str.getBytes());
-	}
-
 	@Override
 	public void publish(String channel, String message) {
 		jedisCluster.publish(channel, message);
 	}
 
 	@Override
-	public void subscribe(final String channel, final MessageHandler handler) {
+	public void subscribe(String channel, final MessageHandler handler) {
 		new Thread() {
 			@Override
 			public void run() {
@@ -134,7 +115,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return resMap;
 		}
 		for (Map.Entry<String, String> strEntry: strMap.entrySet()) {
-			resMap.put(strEntry.getKey(), (T) deserialize(strEntry.getValue()));
+			resMap.put(strEntry.getKey(), deserialize(strEntry.getValue()));
 		}
 		return resMap;
 	}
@@ -192,8 +173,8 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 	}
 
 	@Override
-	public String lindex(String key, long index) {
-		return jedisCluster.lindex(key, index);
+	public <T>T lindex(String key, long index) {
+		return deserialize(jedisCluster.lindex(key, index));
 	}
 
 	@Override
@@ -204,7 +185,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return tList;
 		}
 		for (String str: strList) {
-			tList.add((T) deserialize(str));
+			tList.add(deserialize(str));
 		}
 		return tList;
 	}
@@ -264,7 +245,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (String str: strSet) {
-			tSet.add((T) deserialize(str));
+			tSet.add(deserialize(str));
 		}
 		return tSet;
 	}
@@ -288,7 +269,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (String str: strSet) {
-			tSet.add((T) deserialize(str));
+			tSet.add(deserialize(str));
 		}
 		return tSet;
 	}
@@ -316,7 +297,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (String str: strSet) {
-			tSet.add((T) deserialize(str));
+			tSet.add(deserialize(str));
 		}
 		return tSet;
 	}
@@ -346,7 +327,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (String str: strSet) {
-			tSet.add((T) deserialize(str));
+			tSet.add(deserialize(str));
 		}
 		return tSet;
 	}
