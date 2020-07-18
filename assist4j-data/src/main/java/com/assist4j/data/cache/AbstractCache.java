@@ -1,6 +1,7 @@
 package com.assist4j.data.cache;
 
 
+import com.assist4j.data.SerializeUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,12 +10,19 @@ import java.util.List;
  * @author yuwei
  */
 public abstract class AbstractCache implements Cache {
+	protected String serialize(Object o) {
+		return SerializeUtil.serialize(o);
+	}
+	protected <T>T deserialize(String str) {
+		return SerializeUtil.deserialize(str);
+	}
+
 	@Override
 	public boolean putSplit(String key, String value, long timeout, int maxLength) {
 		if (value == null) {
 			return false;
 		}
-		int oldSize = parseValueSize((String) get(key));
+		int oldSize = parseValueSize(get(key));
 		List<String> valList = split(value, maxLength);
 		int newSize = valList.size();
 		boolean b = put(key, "" + newSize, timeout);
@@ -30,7 +38,7 @@ public abstract class AbstractCache implements Cache {
 
 	@Override
 	public String getSplit(String key) {
-		int size = parseValueSize((String) get(key));
+		int size = parseValueSize(get(key));
 		if (size <= 0) {
 			remove(key);
 			return null;
@@ -46,7 +54,7 @@ public abstract class AbstractCache implements Cache {
 
 	@Override
 	public void removeSplit(String key) {
-		int size = parseValueSize((String) get(key));
+		int size = parseValueSize(get(key));
 		if (size <= 0) {
 			remove(key);
 			return;
