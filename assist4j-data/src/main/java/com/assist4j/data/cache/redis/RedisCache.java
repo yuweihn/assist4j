@@ -47,7 +47,7 @@ public interface RedisCache extends Cache {
 	<T>boolean rpush(String key, T value, long timeout);
 	<T>boolean rpush(String key, List<T> valList, long timeout);
 	long lsize(String key);
-	String lindex(String key, long index);
+	<T>T lindex(String key, long index);
 	<T>List<T> lrange(String key, long start, long end);
 	void ltrim(String key, long start, long end);
 	<T>void lset(String key, long index, T value);
