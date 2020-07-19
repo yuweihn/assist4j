@@ -4,6 +4,7 @@ package com.assist4j.data.cache.redis.jedis;
 import com.assist4j.data.cache.AbstractCache;
 import com.assist4j.data.cache.MessageHandler;
 import com.assist4j.data.cache.redis.RedisCache;
+import com.assist4j.data.serializer.Serializier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.Message;
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class JedisCache extends AbstractCache implements RedisCache {
 	protected RedisTemplate<String, Object> redisTemplate;
+	protected Serializier serializier;
 
 
 	public JedisCache() {
@@ -34,6 +36,10 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
 		this.redisTemplate = redisTemplate;
+	}
+
+	public void setSerializier(Serializier serializier) {
+		this.serializier = serializier;
 	}
 
 	@Override

@@ -7,6 +7,8 @@ import com.assist4j.data.cache.AbstractCache;
 import com.assist4j.data.cache.MessageHandler;
 import com.assist4j.data.cache.redis.RedisCache;
 
+import com.assist4j.data.serializer.DefaultSerializier;
+import com.assist4j.data.serializer.Serializier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.scripting.support.ResourceScriptSource;
@@ -19,15 +21,20 @@ import redis.clients.jedis.JedisPubSub;
  */
 public class JedisClusterCache extends AbstractCache implements RedisCache {
 	protected JedisCluster jedisCluster;
+	protected Serializier serializier;
 
 
 	public JedisClusterCache() {
-
+		serializier = new DefaultSerializier();
 	}
 
 
 	public void setJedisCluster(JedisCluster jedisCluster) {
 		this.jedisCluster = jedisCluster;
+	}
+
+	public void setSerializier(Serializier serializier) {
+		this.serializier = serializier;
 	}
 
 	@Override
