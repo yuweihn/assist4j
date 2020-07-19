@@ -390,6 +390,47 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		jedisCluster.zincrby(key, increment, serializier.serialize(member));
 	}
 
+	@Override
+	public void zinterStore(String key, Collection<String> otherKeys, String destKey) {
+		int len = otherKeys.size();
+		String[] arr = new String[len + 1];
+		arr[0] = key;
+		int i = 1;
+		for (String otherKey: otherKeys) {
+			arr[i++] = otherKey;
+		}
+		jedisCluster.zinterstore(destKey, arr);
+	}
+
+	@Override
+	public void zunionStore(String key, Collection<String> otherKeys, String destKey) {
+		int len = otherKeys.size();
+		String[] arr = new String[len + 1];
+		arr[0] = key;
+		int i = 1;
+		for (String otherKey: otherKeys) {
+			arr[i++] = otherKey;
+		}
+		jedisCluster.zunionstore(destKey, arr);
+	}
+
+	@Override
+	public <T>boolean zremove(String key, Collection<T> members) {
+		if (members == null || members.size() <= 0) {
+			return false;
+		}
+		List<String> strList = new ArrayList<String>();
+		for (T t: members) {
+			strList.add(serializier.serialize(t));
+		}
+		return jedisCluster.zrem(key, strList.toArray(new String[0])) > 0;
+	}
+
+	@Override
+	public <T>Double zscore(String key, T member) {
+		return jedisCluster.zscore(key, serializier.serialize(member));
+	}
+
 	private boolean setNx(String key, String owner, long timeout) {
 		String res = jedisCluster.set(key, serializier.serialize(owner), "NX", "EX", (int) timeout);
 		return "OK".equalsIgnoreCase(res);
