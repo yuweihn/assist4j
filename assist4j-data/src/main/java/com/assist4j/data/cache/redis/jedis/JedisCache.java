@@ -4,6 +4,7 @@ package com.assist4j.data.cache.redis.jedis;
 import com.assist4j.data.cache.AbstractCache;
 import com.assist4j.data.cache.MessageHandler;
 import com.assist4j.data.cache.redis.RedisCache;
+import com.assist4j.data.serializer.DefaultSerializier;
 import com.assist4j.data.serializer.Serializier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataAccessException;
@@ -30,7 +31,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 
 	public JedisCache() {
-
+		serializier = new DefaultSerializier();
 	}
 
 
