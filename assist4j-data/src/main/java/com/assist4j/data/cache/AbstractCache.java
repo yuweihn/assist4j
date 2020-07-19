@@ -1,7 +1,6 @@
 package com.assist4j.data.cache;
 
 
-import com.assist4j.data.SerializeUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,13 +9,6 @@ import java.util.List;
  * @author yuwei
  */
 public abstract class AbstractCache implements Cache {
-	protected String serialize(Object o) {
-		return SerializeUtil.serialize(o);
-	}
-	protected <T>T deserialize(String str) {
-		return SerializeUtil.deserialize(str);
-	}
-
 	@Override
 	public boolean putSplit(String key, String value, long timeout, int maxLength) {
 		if (value == null) {
