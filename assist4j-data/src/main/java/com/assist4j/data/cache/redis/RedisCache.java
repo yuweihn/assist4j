@@ -79,6 +79,10 @@ public interface RedisCache extends Cache {
 	long zlen(String key);
 	long zcount(String key, double min, double max);
 	<T>void zincrby(String key, T member, double increment);
+	void zinterStore(String key, Collection<String> otherKeys, String destKey);
+	void zunionStore(String key, Collection<String> otherKeys, String destKey);
+	<T>boolean zremove(String key, Collection<T> members);
+	<T>Double zscore(String key, T member);
 
 	String execute(String script, List<String> keyList, List<String> argList);
 }
