@@ -83,6 +83,7 @@ public interface RedisCache extends Cache {
 	void zunionStore(String key, Collection<String> otherKeys, String destKey);
 	<T>boolean zremove(String key, Collection<T> members);
 	<T>Double zscore(String key, T member);
+	<T>Long zrank(String key, T member);
 
 	String execute(String script, List<String> keyList, List<String> argList);
 }

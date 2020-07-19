@@ -431,6 +431,11 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		return jedisCluster.zscore(key, serializier.serialize(member));
 	}
 
+	@Override
+	public <T>Long zrank(String key, T member) {
+		return jedisCluster.zrank(key, serializier.serialize(member));
+	}
+
 	private boolean setNx(String key, String owner, long timeout) {
 		String res = jedisCluster.set(key, serializier.serialize(owner), "NX", "EX", (int) timeout);
 		return "OK".equalsIgnoreCase(res);

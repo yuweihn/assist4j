@@ -428,6 +428,11 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		return redisTemplate.opsForZSet().score(key, serializier.serialize(member));
 	}
 
+	@Override
+	public <T>Long zrank(String key, T member) {
+		return redisTemplate.opsForZSet().rank(key, serializier.serialize(member));
+	}
+
 	private boolean setNx(String key, String owner, long timeout) {
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
