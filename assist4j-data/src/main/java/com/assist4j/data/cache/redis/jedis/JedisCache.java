@@ -401,6 +401,33 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		redisTemplate.opsForZSet().incrementScore(key, serializier.serialize(member), increment);
 	}
 
+	@Override
+	public void zinterStore(String key, Collection<String> otherKeys, String destKey) {
+		redisTemplate.opsForZSet().intersectAndStore(key, otherKeys, destKey);
+	}
+
+	@Override
+	public void zunionStore(String key, Collection<String> otherKeys, String destKey) {
+		redisTemplate.opsForZSet().unionAndStore(key, otherKeys, destKey);
+	}
+
+	@Override
+	public <T>boolean zremove(String key, Collection<T> members) {
+		if (members == null || members.size() <= 0) {
+			return false;
+		}
+		List<String> strList = new ArrayList<String>();
+		for (T t: members) {
+			strList.add(serializier.serialize(t));
+		}
+		return redisTemplate.opsForZSet().remove(key, strList.toArray(new String[0])) > 0;
+	}
+
+	@Override
+	public <T>Double zscore(String key, T member) {
+		return redisTemplate.opsForZSet().score(key, serializier.serialize(member));
+	}
+
 	private boolean setNx(String key, String owner, long timeout) {
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
