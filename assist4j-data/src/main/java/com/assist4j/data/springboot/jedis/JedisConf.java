@@ -3,6 +3,8 @@ package com.assist4j.data.springboot.jedis;
 
 import com.assist4j.data.cache.redis.jedis.JedisPoolConnFactory;
 import com.assist4j.data.cache.redis.jedis.JedisCache;
+import com.assist4j.data.serializer.DefaultSerializier;
+import com.assist4j.data.serializer.Serializier;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -68,11 +70,19 @@ public class JedisConf {
 		return template;
 	}
 
+	@ConditionalOnMissingBean(Serializier.class)
+	@Bean(name = "cacheSerializer")
+	public Serializier cacheSerializer() {
+		return new DefaultSerializier();
+	}
+
 	@ConditionalOnMissingBean(name = "redisCache")
 	@Bean(name = "redisCache")
-	public JedisCache redisCache(@Qualifier("redisTemplate") RedisTemplate<String, Object> template) {
+	public JedisCache redisCache(@Qualifier("redisTemplate") RedisTemplate<String, Object> template
+			, @Qualifier("cacheSerializer") Serializier serializier) {
 		JedisCache cache = new JedisCache();
 		cache.setRedisTemplate(template);
+		cache.setSerializier(serializier);
 		return cache;
 	}
 }
