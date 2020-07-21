@@ -4,8 +4,8 @@ package com.assist4j.data.cache.redis.jedis;
 import com.assist4j.data.cache.AbstractCache;
 import com.assist4j.data.cache.MessageHandler;
 import com.assist4j.data.cache.redis.RedisCache;
-import com.assist4j.data.serializer.DefaultSerializier;
-import com.assist4j.data.serializer.Serializier;
+import com.assist4j.data.serializer.DefaultSerializer;
+import com.assist4j.data.serializer.Serializer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.Message;
@@ -27,11 +27,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class JedisCache extends AbstractCache implements RedisCache {
 	protected RedisTemplate<String, Object> redisTemplate;
-	protected Serializier serializier;
+	protected Serializer serializer;
 
 
 	public JedisCache() {
-		serializier = new DefaultSerializier();
+		serializer = new DefaultSerializer();
 	}
 
 
@@ -39,8 +39,8 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		this.redisTemplate = redisTemplate;
 	}
 
-	public void setSerializier(Serializier serializier) {
-		this.serializier = serializier;
+	public void setSerializer(Serializer serializer) {
+		this.serializer = serializer;
 	}
 
 	@Override
@@ -98,13 +98,13 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			throw new RuntimeException("Invalid parameter[timeout].");
 		}
 
-		redisTemplate.opsForValue().set(key, serializier.serialize(value), timeout, TimeUnit.SECONDS);
+		redisTemplate.opsForValue().set(key, serializer.serialize(value), timeout, TimeUnit.SECONDS);
 		return true;
 	}
 
 	@Override
 	public <T>T get(String key) {
-		return (T) serializier.deserialize((String) redisTemplate.opsForValue().get(key));
+		return (T) serializer.deserialize((String) redisTemplate.opsForValue().get(key));
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>boolean hset(String key, String field, T value, long timeout) {
-		redisTemplate.opsForHash().put(key, field, serializier.serialize(value));
+		redisTemplate.opsForHash().put(key, field, serializer.serialize(value));
 		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
 		return true;
 	}
@@ -126,7 +126,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		}
 		Map<String, String> strMap = new HashMap<String, String>();
 		for (Map.Entry<String, T> entry: entries.entrySet()) {
-			strMap.put(entry.getKey(), serializier.serialize(entry.getValue()));
+			strMap.put(entry.getKey(), serializer.serialize(entry.getValue()));
 		}
 		redisTemplate.opsForHash().putAll(key, strMap);
 		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
@@ -135,7 +135,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>T hget(String key, String field) {
-		return (T) serializier.deserialize((String) redisTemplate.opsForHash().get(key, field));
+		return (T) serializer.deserialize((String) redisTemplate.opsForHash().get(key, field));
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return resMap;
 		}
 		for (Map.Entry<String, String> strEntry: strMap.entrySet()) {
-			resMap.put(strEntry.getKey(), (T) serializier.deserialize(strEntry.getValue()));
+			resMap.put(strEntry.getKey(), (T) serializer.deserialize(strEntry.getValue()));
 		}
 		return resMap;
 	}
@@ -159,7 +159,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>boolean lpush(String key, T value, long timeout) {
-		redisTemplate.opsForList().leftPush(key, serializier.serialize(value));
+		redisTemplate.opsForList().leftPush(key, serializer.serialize(value));
 		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
 		return true;
 	}
@@ -171,7 +171,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		}
 		List<String> strList = new ArrayList<String>();
 		for (T t: valList) {
-			strList.add(serializier.serialize(t));
+			strList.add(serializer.serialize(t));
 		}
 		redisTemplate.opsForList().leftPushAll(key, strList.toArray(new String[0]));
 		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
@@ -180,7 +180,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>boolean rpush(String key, T value, long timeout) {
-		redisTemplate.opsForList().rightPush(key, serializier.serialize(value));
+		redisTemplate.opsForList().rightPush(key, serializer.serialize(value));
 		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
 		return true;
 	}
@@ -192,7 +192,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		}
 		List<String> strList = new ArrayList<String>();
 		for (T t: valList) {
-			strList.add(serializier.serialize(t));
+			strList.add(serializer.serialize(t));
 		}
 		redisTemplate.opsForList().rightPushAll(key, strList.toArray(new String[0]));
 		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
@@ -206,7 +206,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>T lindex(String key, long index) {
-		return serializier.deserialize((String) redisTemplate.opsForList().index(key, index));
+		return serializer.deserialize((String) redisTemplate.opsForList().index(key, index));
 	}
 
 	@Override
@@ -217,7 +217,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return tList;
 		}
 		for (Object str: strList) {
-			tList.add((T) serializier.deserialize((String) str));
+			tList.add((T) serializer.deserialize((String) str));
 		}
 		return tList;
 	}
@@ -229,22 +229,22 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>void lset(String key, long index, T value) {
-		redisTemplate.opsForList().set(key, index, serializier.serialize(value));
+		redisTemplate.opsForList().set(key, index, serializer.serialize(value));
 	}
 
 	@Override
 	public <T>T lpop(String key) {
-		return serializier.deserialize((String) redisTemplate.opsForList().leftPop(key));
+		return serializer.deserialize((String) redisTemplate.opsForList().leftPop(key));
 	}
 
 	@Override
 	public <T>T rpop(String key) {
-		return serializier.deserialize((String) redisTemplate.opsForList().rightPop(key));
+		return serializer.deserialize((String) redisTemplate.opsForList().rightPop(key));
 	}
 
 	@Override
 	public <T>void sadd(String key, T t, long timeout) {
-		redisTemplate.opsForSet().add(key, serializier.serialize(t));
+		redisTemplate.opsForSet().add(key, serializer.serialize(t));
 		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
 	}
 
@@ -255,7 +255,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		}
 		List<String> strList = new ArrayList<String>();
 		for (T t: valList) {
-			strList.add(serializier.serialize(t));
+			strList.add(serializer.serialize(t));
 		}
 		redisTemplate.opsForSet().add(key, strList.toArray(new String[0]));
 		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
@@ -274,7 +274,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (Object str: strSet) {
-			tSet.add((T) serializier.deserialize((String) str));
+			tSet.add((T) serializer.deserialize((String) str));
 		}
 		return tSet;
 	}
@@ -292,7 +292,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (Object str: strSet) {
-			tSet.add((T) serializier.deserialize((String) str));
+			tSet.add((T) serializer.deserialize((String) str));
 		}
 		return tSet;
 	}
@@ -310,7 +310,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (Object str: strSet) {
-			tSet.add((T) serializier.deserialize((String) str));
+			tSet.add((T) serializer.deserialize((String) str));
 		}
 		return tSet;
 	}
@@ -322,7 +322,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>boolean sisMember(String key, T member) {
-		return redisTemplate.opsForSet().isMember(key, serializier.serialize(member));
+		return redisTemplate.opsForSet().isMember(key, serializer.serialize(member));
 	}
 
 	@Override
@@ -333,14 +333,14 @@ public class JedisCache extends AbstractCache implements RedisCache {
 			return tSet;
 		}
 		for (Object str: strSet) {
-			tSet.add((T) serializier.deserialize((String) str));
+			tSet.add((T) serializer.deserialize((String) str));
 		}
 		return tSet;
 	}
 
 	@Override
 	public <T>boolean smove(String sourceKey, String destKey, T member) {
-		return redisTemplate.opsForSet().move(sourceKey, serializier.serialize(member), destKey);
+		return redisTemplate.opsForSet().move(sourceKey, serializer.serialize(member), destKey);
 	}
 
 	@Override
@@ -350,14 +350,14 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		}
 		List<String> strList = new ArrayList<String>();
 		for (T t: members) {
-			strList.add(serializier.serialize(t));
+			strList.add(serializer.serialize(t));
 		}
 		return redisTemplate.opsForSet().remove(key, strList.toArray(new String[0])) > 0;
 	}
 
 	@Override
 	public <T>void zadd(String key, T value, double score, long timeout) {
-		redisTemplate.opsForZSet().add(key, serializier.serialize(value), score);
+		redisTemplate.opsForZSet().add(key, serializer.serialize(value), score);
 		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
 	}
 
@@ -373,7 +373,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 				@Override
 				public Object getValue() {
-					return serializier.serialize(entry.getKey());
+					return serializer.serialize(entry.getKey());
 				}
 
 				@Override
@@ -398,7 +398,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>void zincrby(String key, T member, double increment) {
-		redisTemplate.opsForZSet().incrementScore(key, serializier.serialize(member), increment);
+		redisTemplate.opsForZSet().incrementScore(key, serializer.serialize(member), increment);
 	}
 
 	@Override
@@ -418,26 +418,26 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		}
 		List<String> strList = new ArrayList<String>();
 		for (T t: members) {
-			strList.add(serializier.serialize(t));
+			strList.add(serializer.serialize(t));
 		}
 		return redisTemplate.opsForZSet().remove(key, strList.toArray(new String[0])) > 0;
 	}
 
 	@Override
 	public <T>Double zscore(String key, T member) {
-		return redisTemplate.opsForZSet().score(key, serializier.serialize(member));
+		return redisTemplate.opsForZSet().score(key, serializer.serialize(member));
 	}
 
 	@Override
 	public <T>Long zrank(String key, T member) {
-		return redisTemplate.opsForZSet().rank(key, serializier.serialize(member));
+		return redisTemplate.opsForZSet().rank(key, serializer.serialize(member));
 	}
 
 	private <T>boolean setNx(String key, T owner, long timeout) {
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
 		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockNx.lua")));
-		String result = redisTemplate.execute(redisScript, Collections.singletonList(key), serializier.serialize(owner), "" + timeout);
+		String result = redisTemplate.execute(redisScript, Collections.singletonList(key), serializer.serialize(owner), "" + timeout);
 		return result != null && "OK".equalsIgnoreCase(result);
 	}
 	@SuppressWarnings("unused")
@@ -445,14 +445,14 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
 		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockXx.lua")));
-		String result = redisTemplate.execute(redisScript, Collections.singletonList(key), serializier.serialize(owner), "" + timeout);
+		String result = redisTemplate.execute(redisScript, Collections.singletonList(key), serializer.serialize(owner), "" + timeout);
 		return result != null && "OK".equalsIgnoreCase(result);
 	}
 	private <T>boolean setXxEquals(String key, T owner, long timeout) {
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
 		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockXxEquals.lua")));
-		String result = redisTemplate.execute(redisScript, Collections.singletonList(key), serializier.serialize(owner), "" + timeout);
+		String result = redisTemplate.execute(redisScript, Collections.singletonList(key), serializer.serialize(owner), "" + timeout);
 		return result != null && "OK".equalsIgnoreCase(result);
 	}
 
@@ -474,7 +474,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		DefaultRedisScript<Long> redisScript = new DefaultRedisScript<Long>();
 		redisScript.setResultType(Long.class);
 		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/releaseLock.lua")));
-		Long result = redisTemplate.execute(redisScript, Collections.singletonList(key), serializier.serialize(owner));
+		Long result = redisTemplate.execute(redisScript, Collections.singletonList(key), serializer.serialize(owner));
 		return result != null && "1".equals(result.toString());
 	}
 
@@ -483,7 +483,7 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		List<String> strArgList = new ArrayList<String>();
 		if (argList != null && argList.size() > 0) {
 			for (T t: argList) {
-				strArgList.add(serializier.serialize(t));
+				strArgList.add(serializer.serialize(t));
 			}
 		}
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();

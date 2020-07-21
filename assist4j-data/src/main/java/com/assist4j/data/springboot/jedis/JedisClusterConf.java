@@ -3,8 +3,8 @@ package com.assist4j.data.springboot.jedis;
 
 import com.assist4j.data.cache.redis.jedis.JedisClusterCache;
 import com.assist4j.data.cache.redis.jedis.JedisClusterFactory;
-import com.assist4j.data.serializer.DefaultSerializier;
-import com.assist4j.data.serializer.Serializier;
+import com.assist4j.data.serializer.DefaultSerializer;
+import com.assist4j.data.serializer.Serializer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -50,19 +50,19 @@ public class JedisClusterConf {
 		return factory;
 	}
 
-	@ConditionalOnMissingBean(Serializier.class)
+	@ConditionalOnMissingBean(Serializer.class)
 	@Bean(name = "cacheSerializer")
-	public Serializier cacheSerializer() {
-		return new DefaultSerializier();
+	public Serializer cacheSerializer() {
+		return new DefaultSerializer();
 	}
 
 	@ConditionalOnMissingBean(name = "redisCache")
 	@Bean(name = "redisCache")
 	public JedisClusterCache redisClusterCache(@Qualifier("jedisCluster") JedisCluster jedisCluster
-			, @Qualifier("cacheSerializer") Serializier serializier) {
+			, @Qualifier("cacheSerializer") Serializer serializer) {
 		JedisClusterCache cache = new JedisClusterCache();
 		cache.setJedisCluster(jedisCluster);
-		cache.setSerializier(serializier);
+		cache.setSerializer(serializer);
 		return cache;
 	}
 }

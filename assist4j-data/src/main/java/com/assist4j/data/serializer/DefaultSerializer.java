@@ -11,8 +11,8 @@ import java.io.*;
  * 序列化工具
  * @author wei
  */
-public class DefaultSerializier implements Serializier {
-	private static final Logger log = LoggerFactory.getLogger(DefaultSerializier.class);
+public class DefaultSerializer implements Serializer {
+	private static final Logger log = LoggerFactory.getLogger(DefaultSerializer.class);
 
 
 	/**
