@@ -479,10 +479,16 @@ public class JedisCache extends AbstractCache implements RedisCache {
 	}
 
 	@Override
-	public String execute(String script, List<String> keyList, List<String> argList) {
+	public <T>String execute(String script, List<String> keyList, List<T> argList) {
+		List<String> strArgList = new ArrayList<String>();
+		if (argList != null && argList.size() > 0) {
+			for (T t: argList) {
+				strArgList.add(serializier.serialize(t));
+			}
+		}
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
 		redisScript.setScriptText(script);
-		return redisTemplate.execute(redisScript, keyList, argList == null ? new Object[0] : argList.toArray());
+		return redisTemplate.execute(redisScript, keyList, strArgList.toArray());
 	}
 }
