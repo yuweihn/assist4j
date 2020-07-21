@@ -436,16 +436,16 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		return jedisCluster.zrank(key, serializier.serialize(member));
 	}
 
-	private boolean setNx(String key, String owner, long timeout) {
+	private <T>boolean setNx(String key, T owner, long timeout) {
 		String res = jedisCluster.set(key, serializier.serialize(owner), "NX", "EX", (int) timeout);
 		return "OK".equalsIgnoreCase(res);
 	}
 	@SuppressWarnings("unused")
-	private boolean setXx(String key, String owner, long timeout) {
+	private <T>boolean setXx(String key, T owner, long timeout) {
 		String res = jedisCluster.set(key, serializier.serialize(owner), "XX", "EX", (int) timeout);
 		return "OK".equalsIgnoreCase(res);
 	}
-	private boolean setXxEquals(String key, String owner, long timeout) {
+	private <T>boolean setXxEquals(String key, T owner, long timeout) {
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
 		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockXxEquals.lua")));
@@ -454,17 +454,17 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 	}
 
 	@Override
-	public boolean lock(String key, String owner, long timeout) {
+	public <T>boolean lock(String key, T owner, long timeout) {
 		return lock(key, owner, timeout, false);
 	}
 
 	@Override
-	public boolean lock(String key, String owner, long timeout, boolean reentrant) {
+	public <T>boolean lock(String key, T owner, long timeout, boolean reentrant) {
 		return reentrant && setXxEquals(key, owner, timeout) || setNx(key, owner, timeout);
 	}
 
 	@Override
-	public boolean unlock(String key, String owner) {
+	public <T>boolean unlock(String key, T owner) {
 		if (!contains(key)) {
 			return true;
 		}
