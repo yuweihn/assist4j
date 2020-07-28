@@ -4,11 +4,7 @@ package com.assist4j.schedule;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +46,7 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 		if (null == zk) {
 			synchronized (this) {
 				if (null == zk) {
-					final CountDownLatch connectZookeeperLatch = new CountDownLatch(1);
+					final CountDownLatch latch = new CountDownLatch(1);
 					try {
 						log.info("Connecting......");
 						zk = new ZooKeeper(zkConn, zkTimeout, new Watcher() {
@@ -58,12 +54,12 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 							public void process(WatchedEvent event) {
 								log.info("ZooKeeper event occurs here: " + event);
 								if (event.getState() == Event.KeeperState.SyncConnected) {
-									connectZookeeperLatch.countDown();
+									latch.countDown();
 									log.info("Connected");
 								}
 							}
 						});
-						connectZookeeperLatch.await(5, TimeUnit.SECONDS);
+						latch.await(5, TimeUnit.SECONDS);
 					} catch (Exception e) {
 						log.error("", e);
 						throw new RuntimeException(e);
@@ -88,7 +84,6 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 				log.info("Create server node ({} => {})", path, node);
 				return true;
 			} catch (Exception e) {
-				destroy();
 				return false;
 			}
 		}
@@ -97,13 +92,10 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 
 	@Override
 	public void release() {
-		if (zk != null) {
-			try {
-				zk.close();
-			} catch (InterruptedException e) {
-				log.error("", e);
-			}
-			zk = null;
+		try {
+			getZk().delete(zkNodeName, -1);
+		} catch (InterruptedException | KeeperException e) {
+			log.error("", e);
 		}
 	}
 
@@ -120,7 +112,6 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 			}
 			val = getZk().getData(zkNodeName, false, stat);
 		} catch (Exception e) {
-			destroy();
 			log.error("get " + zkNodeName + " error, ", e);
 		}
 		return val == null ? null : new String(val);
@@ -133,6 +124,13 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 
 	@Override
 	public void destroy() {
-		release();
+		if (zk != null) {
+			try {
+				zk.close();
+			} catch (InterruptedException e) {
+				log.error("", e);
+			}
+			zk = null;
+		}
 	}
 }
