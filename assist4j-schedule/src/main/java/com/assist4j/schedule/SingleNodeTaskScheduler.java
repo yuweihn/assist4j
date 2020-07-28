@@ -22,26 +22,31 @@ public class SingleNodeTaskScheduler extends ThreadPoolTaskScheduler {
 
 
 	protected LeaderElector leaderElector;
+	protected boolean release = true;
 
 
 	protected Runnable taskWrapper(final Runnable task) {
-        return new Runnable() {
-            @Override
-            public void run() {
-                if (leaderElector.acquire()) {
-                    task.run();
-                    log.info("Job executed here, {}", leaderElector.getLocalNode());
-                } else {
-                    String leaderNode = leaderElector.getLeaderNode();
-                    if (leaderNode == null) {
-                        log.info("Not leader, job didn't execute!");
-                    } else {
-                        log.info("Not leader, job didn't execute! Leader: {}", leaderNode);
-                    }
-                }
-            }
-        };
-    }
+		return new Runnable() {
+			@Override
+			public void run() {
+				if (leaderElector.acquire()) {
+					task.run();
+					String localNode = leaderElector.getLocalNode();
+					if (release) {
+						leaderElector.release();
+					}
+					log.info("Job executed here, {}", localNode);
+				} else {
+					String leaderNode = leaderElector.getLeaderNode();
+					if (leaderNode == null) {
+						log.info("Not leader, job didn't execute!");
+					} else {
+						log.info("Not leader, job didn't execute! Leader: {}", leaderNode);
+					}
+				}
+			}
+		};
+	}
 
 	@Override
 	public ScheduledFuture<?> schedule(Runnable task, Trigger trigger) {
@@ -75,5 +80,9 @@ public class SingleNodeTaskScheduler extends ThreadPoolTaskScheduler {
 
 	public void setLeaderElector(LeaderElector leaderElector) {
 		this.leaderElector = leaderElector;
+	}
+
+	public void setRelease(boolean release) {
+		this.release = release;
 	}
 }
