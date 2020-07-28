@@ -92,8 +92,16 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 
 	@Override
 	public void release() {
+		if (zk == null) {
+			return;
+		}
+		String node = getLocalNode();
+		String leaderNode = getLeaderNode();
+		if (node == null || !node.equals(leaderNode)) {
+			return;
+		}
 		try {
-			getZk().delete(zkNodeName, -1);
+			zk.delete(zkNodeName, -1);
 		} catch (InterruptedException | KeeperException e) {
 			log.error("", e);
 		}
