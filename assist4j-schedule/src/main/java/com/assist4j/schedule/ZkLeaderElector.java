@@ -103,7 +103,7 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 		try {
 			zk.delete(zkNodeName, -1);
 		} catch (InterruptedException | KeeperException e) {
-			log.error("", e);
+			log.warn("", e);
 		}
 	}
 
@@ -120,7 +120,7 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 			}
 			val = getZk().getData(zkNodeName, false, stat);
 		} catch (Exception e) {
-			log.error("get " + zkNodeName + " error, ", e);
+			log.warn("get " + zkNodeName + " error, ", e);
 		}
 		return val == null ? null : new String(val);
 	}
