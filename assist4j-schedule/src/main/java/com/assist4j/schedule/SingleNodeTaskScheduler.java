@@ -28,7 +28,7 @@ public class SingleNodeTaskScheduler extends ThreadPoolTaskScheduler {
         return new Runnable() {
             @Override
             public void run() {
-                if (leaderElector.isLeader()) {
+                if (leaderElector.acquire()) {
                     task.run();
                     log.info("Job executed here, {}", leaderElector.getLocalNode());
                 } else {
