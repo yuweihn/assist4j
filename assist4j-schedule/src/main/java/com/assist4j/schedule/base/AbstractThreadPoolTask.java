@@ -6,11 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 
@@ -51,7 +47,14 @@ public abstract class AbstractThreadPoolTask<T> extends AbstractTask {
 		}
 
 		List<Future<Result>> futureList = new ArrayList<Future<Result>>();
-		taskList.forEach(task -> futureList.add(executor.submit(() -> new Result(task, processTask(task)))));
+		for (final T task: taskList) {
+			futureList.add(executor.submit(new Callable<Result>() {
+				@Override
+				public Result call() throws Exception {
+					return new Result(task, processTask(task));
+				}
+			}));
+		}
 
 		/**
 		 * 收集执行结果，用于处理失败的记录。
