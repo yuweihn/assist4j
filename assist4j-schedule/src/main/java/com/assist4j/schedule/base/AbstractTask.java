@@ -33,16 +33,15 @@ public abstract class AbstractTask {
 		}
 	};
 
-	private final LeaderElector leaderElector;
 	private final String lockName;
 
 	public AbstractTask() {
-		this.leaderElector = getElector();
 		this.lockName = getLockName();
 	}
 
 	public void execute() {
 		long startTime = System.currentTimeMillis();
+		LeaderElector leaderElector = getElector();
 		if (leaderElector.acquire(lockName)) {
 			before();
 			executeTask();
@@ -65,7 +64,7 @@ public abstract class AbstractTask {
 
 	}
 	protected void after() {
-		leaderElector.release(lockName);
+		getElector().release(lockName);
 	}
 	protected abstract void executeTask();
 	protected String getLockName() {
