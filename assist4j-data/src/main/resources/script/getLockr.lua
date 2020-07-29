@@ -1,4 +1,4 @@
-res = nil
+local res = nil
 if ARGV[1] == 'true' then
     res = redis.call('get', KEYS[1])
     if res == ARGV[2] then
@@ -16,6 +16,8 @@ else
     local r = redis.call('set', KEYS[1], ARGV[2], 'EX', ARGV[3], 'NX')
     if (r == 'OK' or r == 'ok') then
         res = ARGV[2]
+    else
+        res = redis.call('get', KEYS[1])
     end
 end
 
