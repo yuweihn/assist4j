@@ -463,7 +463,12 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>boolean lock(String key, T owner, long timeout, boolean reentrant) {
-		return reentrant && setXxEquals(key, owner, timeout) || setNx(key, owner, timeout);
+		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
+		redisScript.setResultType(String.class);
+		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLock.lua")));
+		String result = redisTemplate.execute(redisScript, Collections.singletonList(key)
+				, String.valueOf(reentrant), serializer.serialize(owner), String.valueOf(timeout));
+		return "OK".equalsIgnoreCase(result);
 	}
 
 	@Override
