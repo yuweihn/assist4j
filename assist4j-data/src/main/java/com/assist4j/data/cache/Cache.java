@@ -37,6 +37,10 @@ public interface Cache {
 
 	<T>boolean lock(String key, T owner, long timeout);
 	/**
+	 * 返回锁的当前持有者
+	 */
+	<T>T rlock(String key, T owner, long timeout);
+	/**
 	 * @param key
 	 * @param owner
 	 * @param timeout 单位：秒。
@@ -44,5 +48,9 @@ public interface Cache {
 	 * @return
 	 */
 	<T>boolean lock(String key, T owner, long timeout, boolean reentrant);
+	/**
+	 * 返回锁的当前持有者
+	 */
+	<T>T rlock(String key, T owner, long timeout, boolean reentrant);
 	<T>boolean unlock(String key, T owner);
 }
