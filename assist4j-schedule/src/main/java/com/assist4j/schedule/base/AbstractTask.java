@@ -47,8 +47,10 @@ public abstract class AbstractTask {
 			before();
 			executeTask();
 			after();
+			String localNode = leaderElector.getLocalNode(lockName);
 			long timeCost = System.currentTimeMillis() - startTime;
-			log.info("Job executed here, JobName: {}, TimeCost: {}s", this.getClass().getName(), timeCost / 1000.0);
+			log.info("Job executed here, JobName: {}, LocalNode: {}, TimeCost: {}s"
+					, this.getClass().getName(), localNode, timeCost / 1000.0);
 		} else {
 			String leaderNode = leaderElector.getLeaderNode(lockName);
 			if (leaderNode == null) {
