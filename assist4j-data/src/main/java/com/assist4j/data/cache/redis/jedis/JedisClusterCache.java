@@ -465,16 +465,20 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>String execute(String script, List<String> keyList, List<T> argList) {
+		return execute(script, keyList, argList, String.class);
+	}
+
+	@Override
+	public <T, S> S execute(String script, List<String> keyList, List<T> argList, Class<S> returnType) {
 		List<String> strArgList = new ArrayList<String>();
 		if (argList != null && argList.size() > 0) {
 			for (T t: argList) {
 				strArgList.add(serializer.serialize(t));
 			}
 		}
-		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
-		redisScript.setResultType(String.class);
+		DefaultRedisScript<S> redisScript = new DefaultRedisScript<S>();
+		redisScript.setResultType(returnType);
 		redisScript.setScriptText(script);
-		Object result = jedisCluster.eval(redisScript.getScriptAsString(), keyList, strArgList);
-		return result == null ? null : result.toString();
+		return (S) jedisCluster.eval(redisScript.getScriptAsString(), keyList, strArgList);
 	}
 }

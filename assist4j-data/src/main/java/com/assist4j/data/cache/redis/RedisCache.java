@@ -86,4 +86,5 @@ public interface RedisCache extends Cache {
 	<T>Long zrank(String key, T member);
 
 	<T>String execute(String script, List<String> keyList, List<T> argList);
+	<T, S> S execute(String script, List<String> keyList, List<T> argList, Class<S> returnType);
 }
