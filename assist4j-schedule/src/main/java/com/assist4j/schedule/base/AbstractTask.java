@@ -11,29 +11,44 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractTask {
 	private static final Logger log = LoggerFactory.getLogger(AbstractTask.class);
+	private static final LeaderElector DEFAULT_LEADER_ELECTOR = new LeaderElector() {
+		@Override
+		public boolean acquire(String lock) {
+			return true;
+		}
+
+		@Override
+		public void release(String lock) {
+
+		}
+
+		@Override
+		public String getLocalNode(String lock) {
+			return "Local";
+		}
+
+		@Override
+		public String getLeaderNode(String lock) {
+			return "Local";
+		}
+	};
+
+	private final LeaderElector leaderElector;
+	private final String lockName;
 
 	public AbstractTask() {
-		
+		this.leaderElector = getElector();
+		this.lockName = getLockName();
 	}
 
 	public void execute() {
 		long startTime = System.currentTimeMillis();
-		String lockName = getLockName();
-		LeaderElector leaderElector= getLeaderElector();
-		if (leaderElector == null) {
-			leaderElector = getDefaultLeaderElector();
-		}
-		boolean release = getRelease();
 		if (leaderElector.acquire(lockName)) {
 			before();
 			executeTask();
 			after();
-			if (release) {
-				leaderElector.release(lockName);
-			}
 			long timeCost = System.currentTimeMillis() - startTime;
-			log.info("Job executed here, JobName: {}, TimeCost: {}s"
-					, this.getClass().getName(), timeCost / 1000.0);
+			log.info("Job executed here, JobName: {}, TimeCost: {}s", this.getClass().getName(), timeCost / 1000.0);
 		} else {
 			String leaderNode = leaderElector.getLeaderNode(lockName);
 			if (leaderNode == null) {
@@ -48,7 +63,7 @@ public abstract class AbstractTask {
 
 	}
 	protected void after() {
-		
+		leaderElector.release(lockName);
 	}
 	protected abstract void executeTask();
 	protected String getLockName() {
@@ -57,30 +72,8 @@ public abstract class AbstractTask {
 	protected LeaderElector getLeaderElector() {
 		return null;
 	}
-	private LeaderElector getDefaultLeaderElector() {
-		return new LeaderElector() {
-			@Override
-			public boolean acquire(String lock) {
-				return true;
-			}
-
-			@Override
-			public void release(String lock) {
-
-			}
-
-			@Override
-			public String getLocalNode(String lock) {
-				return "Local";
-			}
-
-			@Override
-			public String getLeaderNode(String lock) {
-				return "Local";
-			}
-		};
-	}
-	protected boolean getRelease() {
-		return true;
+	private LeaderElector getElector() {
+		LeaderElector leaderElector = getLeaderElector();
+		return leaderElector != null ? leaderElector : DEFAULT_LEADER_ELECTOR;
 	}
 }
