@@ -440,6 +440,9 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>boolean lock(String key, T owner, long timeout, boolean reentrant) {
+		if (owner == null) {
+			return false;
+		}
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
 		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLock.lua")));
@@ -450,6 +453,9 @@ public class JedisCache extends AbstractCache implements RedisCache {
 
 	@Override
 	public <T>boolean unlock(String key, T owner) {
+		if (owner == null) {
+			return false;
+		}
 		if (!contains(key)) {
 			return true;
 		}
