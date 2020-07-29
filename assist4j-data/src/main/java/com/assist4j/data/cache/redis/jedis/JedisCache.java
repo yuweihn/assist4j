@@ -433,29 +433,6 @@ public class JedisCache extends AbstractCache implements RedisCache {
 		return redisTemplate.opsForZSet().rank(key, serializer.serialize(member));
 	}
 
-	private <T>boolean setNx(String key, T owner, long timeout) {
-		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
-		redisScript.setResultType(String.class);
-		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockNx.lua")));
-		String result = redisTemplate.execute(redisScript, Collections.singletonList(key), serializer.serialize(owner), "" + timeout);
-		return result != null && "OK".equalsIgnoreCase(result);
-	}
-	@SuppressWarnings("unused")
-	private <T>boolean setXx(String key, T owner, long timeout) {
-		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
-		redisScript.setResultType(String.class);
-		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockXx.lua")));
-		String result = redisTemplate.execute(redisScript, Collections.singletonList(key), serializer.serialize(owner), "" + timeout);
-		return result != null && "OK".equalsIgnoreCase(result);
-	}
-	private <T>boolean setXxEquals(String key, T owner, long timeout) {
-		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
-		redisScript.setResultType(String.class);
-		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockXxEquals.lua")));
-		String result = redisTemplate.execute(redisScript, Collections.singletonList(key), serializer.serialize(owner), "" + timeout);
-		return result != null && "OK".equalsIgnoreCase(result);
-	}
-
 	@Override
 	public <T>boolean lock(String key, T owner, long timeout) {
 		return lock(key, owner, timeout, false);

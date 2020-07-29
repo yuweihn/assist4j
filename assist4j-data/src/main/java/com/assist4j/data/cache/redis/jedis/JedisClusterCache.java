@@ -436,23 +436,6 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		return jedisCluster.zrank(key, serializer.serialize(member));
 	}
 
-	private <T>boolean setNx(String key, T owner, long timeout) {
-		String res = jedisCluster.set(key, serializer.serialize(owner), "NX", "EX", (int) timeout);
-		return "OK".equalsIgnoreCase(res);
-	}
-	@SuppressWarnings("unused")
-	private <T>boolean setXx(String key, T owner, long timeout) {
-		String res = jedisCluster.set(key, serializer.serialize(owner), "XX", "EX", (int) timeout);
-		return "OK".equalsIgnoreCase(res);
-	}
-	private <T>boolean setXxEquals(String key, T owner, long timeout) {
-		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
-		redisScript.setResultType(String.class);
-		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockXxEquals.lua")));
-		Object result = jedisCluster.eval(redisScript.getScriptAsString(), Collections.singletonList(key), Arrays.asList(serializer.serialize(owner), "" + timeout));
-		return result != null && "OK".equalsIgnoreCase(result.toString());
-	}
-
 	@Override
 	public <T>boolean lock(String key, T owner, long timeout) {
 		return lock(key, owner, timeout, false);
