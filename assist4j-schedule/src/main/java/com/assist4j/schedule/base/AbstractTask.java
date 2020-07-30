@@ -13,22 +13,15 @@ public abstract class AbstractTask {
 	private static final Logger log = LoggerFactory.getLogger(AbstractTask.class);
 	private static final LeaderElector DEFAULT_LEADER_ELECTOR = new LeaderElector() {
 		@Override
-		public boolean acquire(String lock) {
-			return true;
+		public String acquire(String lock) {
+			return getLocalNode(lock);
 		}
-
 		@Override
 		public void release(String lock) {
 
 		}
-
 		@Override
 		public String getLocalNode(String lock) {
-			return "Local";
-		}
-
-		@Override
-		public String getLeaderNode(String lock) {
 			return "Local";
 		}
 	};
@@ -42,21 +35,17 @@ public abstract class AbstractTask {
 	public void execute() {
 		long startTime = System.currentTimeMillis();
 		LeaderElector leaderElector = getElector();
-		if (leaderElector.acquire(lockName)) {
+		String localNode = leaderElector.getLocalNode(lockName);
+		String leaderNode = leaderElector.acquire(lockName);
+		if (localNode != null && localNode.equals(leaderNode)) {
 			before();
 			executeTask();
 			after();
-			String localNode = leaderElector.getLocalNode(lockName);
 			long timeCost = System.currentTimeMillis() - startTime;
 			log.info("Job executed here, JobName: {}, LocalNode: {}, TimeCost: {}s"
 					, this.getClass().getName(), localNode, timeCost / 1000.0);
 		} else {
-			String leaderNode = leaderElector.getLeaderNode(lockName);
-			if (leaderNode == null) {
-				log.info("Not leader, job didn't execute! JobName: {}", this.getClass().getName());
-			} else {
-				log.info("Not leader, job didn't execute! JobName: {}, Leader: {}", this.getClass().getName(), leaderNode);
-			}
+			log.info("Not leader, job didn't execute! JobName: {}, Leader: {}", this.getClass().getName(), leaderNode);
 		}
 	}
 
