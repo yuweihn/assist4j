@@ -71,7 +71,7 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 	}
 
 	@Override
-	public boolean acquire(String lock) {
+	public String acquire(String lock) {
 		String key = ZK_NODE_NAME_PRE + lock;
 		String node = getLocalNode(key);
 		String leaderNode = getLeaderNode(lock);
@@ -79,12 +79,12 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 			try {
 				String path = getZk().create(lock, node.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
 				log.info("Create server node ({} => {})", path, node);
-				return true;
+				return node;
 			} catch (Exception e) {
-				return false;
+				log.error("{}", e.getMessage());
 			}
 		}
-		return node.equals(leaderNode);
+		return getLeaderNode(lock);
 	}
 
 	@Override
@@ -108,8 +108,7 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 	/**
 	 * 获取当前leader
 	 */
-	@Override
-	public String getLeaderNode(String lock) {
+	private String getLeaderNode(String lock) {
 		String key = ZK_NODE_NAME_PRE + lock;
 		byte[] val = null;
 		try {
