@@ -24,7 +24,7 @@ public class RedisLeaderElector extends AbstractLeaderElector {
 	}
 
 	@Override
-	public boolean acquire(String lock) {
+	public String acquire(String lock) {
 		String key = CACHE_LEADER_KEY_PRE + lock;
 		return redis.lock(lock, getLocalNode(key), timeout / 1000);
 	}
@@ -33,12 +33,6 @@ public class RedisLeaderElector extends AbstractLeaderElector {
 	public void release(String lock) {
 		String key = CACHE_LEADER_KEY_PRE + lock;
 		redis.unlock(lock, getLocalNode(key));
-	}
-
-	@Override
-	public String getLeaderNode(String lock) {
-		String key = CACHE_LEADER_KEY_PRE + lock;
-		return redis.get(key);
 	}
 
 	@Override
