@@ -9,8 +9,8 @@ package com.assist4j.schedule;
 public interface Redis {
 	/**
 	 * @param timeout 单位：秒。
+	 * 返回锁的持有者。
 	 */
-	boolean lock(String key, String owner, long timeout);
+	String lock(String key, String owner, long timeout);
 	boolean unlock(String key, String owner);
-	String get(String key);
 }
