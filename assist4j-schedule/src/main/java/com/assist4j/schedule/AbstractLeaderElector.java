@@ -8,7 +8,7 @@ import com.assist4j.schedule.util.IpUtil;
  * @author yuwei
  */
 public abstract class AbstractLeaderElector implements LeaderElector {
-	private String localNode;
+	private final String localNode;
 
 	public AbstractLeaderElector() {
 		this.localNode = IpUtil.getLocalInnerIP();
