@@ -466,7 +466,7 @@ public class JedisClusterCache extends AbstractCache implements RedisCache {
 		}
 		DefaultRedisScript<String> redisScript = new DefaultRedisScript<String>();
 		redisScript.setResultType(String.class);
-		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockr.lua")));
+		redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/getLockt.lua")));
 		Object result = jedisCluster.eval(redisScript.getScriptAsString(), Collections.singletonList(key)
 				, Arrays.asList(String.valueOf(reentrant), serializer.serialize(owner), String.valueOf(timeout)));
 		return result == null ? null : (T) serializer.deserialize(result.toString());
