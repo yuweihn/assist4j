@@ -1,9 +1,8 @@
-if ARGV[1] == 'true' then
-    if redis.call('get', KEYS[1]) == ARGV[2] then
-        return redis.call('set', KEYS[1], ARGV[2], 'EX', ARGV[3], 'XX')
-    else
-        return redis.call('set', KEYS[1], ARGV[2], 'EX', ARGV[3], 'NX')
-    end
+if redis.call('get', KEYS[1]) == ARGV[1] then
+    redis.call('expire', KEYS[1], ARGV[2]);
+    return ARGV[1];
 else
-    return redis.call('set', KEYS[1], ARGV[2], 'EX', ARGV[3], 'NX')
+    redis.call('set', KEYS[1], ARGV[1], 'EX', ARGV[2], 'NX');
+    return redis.call('get', KEYS[1]);
 end
+
