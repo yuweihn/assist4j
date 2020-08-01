@@ -62,7 +62,7 @@ public abstract class AbstractTask {
 	protected String getLockName() {
 		return this.getClass().getName();
 	}
-	public boolean getRelease() {
+	protected boolean getRelease() {
 		return true;
 	}
 	protected LeaderElector getLeaderElector() {
