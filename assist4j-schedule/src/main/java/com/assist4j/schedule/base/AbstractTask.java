@@ -18,7 +18,7 @@ public abstract class AbstractTask {
 		}
 		@Override
 		public void release(String lock) {
-
+			//NO-OP
 		}
 		@Override
 		public String getLocalNode(String lock) {
@@ -26,20 +26,23 @@ public abstract class AbstractTask {
 		}
 	};
 
-	private final String lockName;
-
 	public AbstractTask() {
-		this.lockName = getLockName();
+
 	}
 
 	public void execute() {
 		long startTime = System.currentTimeMillis();
 		LeaderElector leaderElector = getElector();
+		String lockName = getLockName();
+		boolean release  = getRelease();
 		String localNode = leaderElector.getLocalNode(lockName);
 		String leaderNode = leaderElector.acquire(lockName);
 		if (localNode != null && localNode.equals(leaderNode)) {
 			before();
 			executeTask();
+			if (release) {
+				leaderElector.release(lockName);
+			}
 			after();
 			long timeCost = System.currentTimeMillis() - startTime;
 			log.info("Job executed here, JobName: {}, LocalNode: {}, TimeCost: {}s"
@@ -53,11 +56,14 @@ public abstract class AbstractTask {
 
 	}
 	protected void after() {
-		getElector().release(lockName);
+
 	}
 	protected abstract void executeTask();
 	protected String getLockName() {
 		return this.getClass().getName();
+	}
+	public boolean getRelease() {
+		return true;
 	}
 	protected LeaderElector getLeaderElector() {
 		return null;
