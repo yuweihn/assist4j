@@ -34,7 +34,7 @@ public abstract class AbstractTask {
 		long startTime = System.currentTimeMillis();
 		LeaderElector leaderElector = getElector();
 		String lockName = getLockName();
-		boolean release  = getRelease();
+		boolean release = getRelease();
 		String localNode = leaderElector.getLocalNode(lockName);
 		String leaderNode = leaderElector.acquire(lockName);
 		if (localNode != null && localNode.equals(leaderNode)) {
