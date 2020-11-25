@@ -15,7 +15,6 @@ import java.util.Map;
  * @author yuwei
  */
 public class SelectSqlProvider extends AbstractProvider {
-
 	@SuppressWarnings("unchecked")
 	public <PK, T>String selectOneById(Map<String, Object> param) throws IllegalAccessException {
 		PK id = (PK) param.get("id");
