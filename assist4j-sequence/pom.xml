@@ -6,7 +6,7 @@
 	<groupId>com.assist4j</groupId>
 	<artifactId>assist4j-sequence</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.50</version>
+	<version>1.0.51</version>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>The Project of Assist4j</description>
