@@ -18,7 +18,10 @@ public class SelectSqlProvider extends AbstractProvider {
 
 	@SuppressWarnings("unchecked")
 	public <PK, T>String selectOneById(Map<String, Object> param) throws IllegalAccessException {
-//		PK id = (PK) param.get("id");
+		PK id = (PK) param.get("id");
+		if (id == null) {
+			return null;
+		}
 		Class<T> entityClass = (Class<T>) param.get("clz");
 		final String tableName = getTableName(entityClass);
 		
