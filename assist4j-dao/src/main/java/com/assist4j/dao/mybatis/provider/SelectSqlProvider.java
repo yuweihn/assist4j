@@ -17,10 +17,7 @@ import java.util.Map;
 public class SelectSqlProvider extends AbstractProvider {
 	@SuppressWarnings("unchecked")
 	public <PK, T>String selectOneById(Map<String, Object> param) throws IllegalAccessException {
-		PK id = (PK) param.get("id");
-		if (id == null) {
-			return null;
-		}
+//		PK id = (PK) param.get("id");
 		Class<T> entityClass = (Class<T>) param.get("clz");
 		final String tableName = getTableName(entityClass);
 		
