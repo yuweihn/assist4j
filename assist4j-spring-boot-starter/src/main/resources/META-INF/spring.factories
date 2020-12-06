@@ -1,13 +1,13 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.assist4j.boot.DefaultAutoConfiguration,\
-  com.assist4j.boot.datasource.SingleDataSourceHibernateAutoConfiguration,\
-  com.assist4j.boot.datasource.GroupDataSourceHibernateAutoConfiguration,\
-  com.assist4j.boot.datasource.SingleDataSourceMybatisAutoConfiguration,\
-  com.assist4j.boot.datasource.GroupDataSourceMybatisAutoConfiguration,\
-  com.assist4j.boot.mongo.MongoAutoConfiguration,\
-  com.assist4j.boot.redis.JedisAutoConfiguration,\
-  com.assist4j.boot.redis.JedisMsAutoConfiguration,\
-  com.assist4j.boot.redis.JedisClusterAutoConfiguration,\
-  com.assist4j.boot.smtp.SmtpAutoConfiguration,\
-  com.assist4j.boot.web.WebAutoConfiguration,\
-  com.assist4j.boot.web.FreeMarkerAutoConfiguration,\
-  com.assist4j.boot.exception.ExceptionAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=DefaultAutoConfiguration,\
+  SingleDataSourceHibernateAutoConfiguration,\
+  GroupDataSourceHibernateAutoConfiguration,\
+  SingleDataSourceMybatisAutoConfiguration,\
+  GroupDataSourceMybatisAutoConfiguration,\
+  MongoAutoConfiguration,\
+  JedisAutoConfiguration,\
+  JedisMsAutoConfiguration,\
+  JedisClusterAutoConfiguration,\
+  SmtpAutoConfiguration,\
+  WebAutoConfiguration,\
+  FreeMarkerAutoConfiguration,\
+  ExceptionAutoConfiguration
