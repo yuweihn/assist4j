@@ -2,9 +2,9 @@ package com.assist4j.boot.datasource;
 
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.assist4j.data.ds.DataSourceCluster;
-import com.assist4j.data.ds.KvPair;
-import com.assist4j.data.springboot.GroupDataSourceMybatisConf;
+import com.yuweix.assist4j.data.ds.DataSourceCluster;
+import com.yuweix.assist4j.data.ds.KvPair;
+import com.yuweix.assist4j.data.springboot.GroupDataSourceMybatisConf;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;

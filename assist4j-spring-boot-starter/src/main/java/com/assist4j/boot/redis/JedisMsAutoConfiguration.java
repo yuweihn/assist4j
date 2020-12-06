@@ -1,7 +1,7 @@
 package com.assist4j.boot.redis;
 
 
-import com.assist4j.data.springboot.jedis.JedisMsConf;
+import com.yuweix.assist4j.data.springboot.jedis.JedisMsConf;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

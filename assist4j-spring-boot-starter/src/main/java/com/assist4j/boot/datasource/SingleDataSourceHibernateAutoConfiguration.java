@@ -2,7 +2,7 @@ package com.assist4j.boot.datasource;
 
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.assist4j.data.springboot.SingleDataSourceHibernateConf;
+import com.yuweix.assist4j.data.springboot.SingleDataSourceHibernateConf;
 import com.assist4j.sequence.base.DefaultSequence;
 import com.assist4j.sequence.base.SequenceBeanFactory;
 import com.assist4j.sequence.base.SequenceBeanHolder;
