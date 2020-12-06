@@ -1,7 +1,7 @@
 package com.assist4j.boot;
 
 
-import com.assist4j.core.SpringContext;
+import com.yuweix.assist4j.core.SpringContext;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

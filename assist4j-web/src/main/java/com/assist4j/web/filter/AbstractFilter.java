@@ -2,8 +2,8 @@ package com.assist4j.web.filter;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.assist4j.core.ActionUtil;
-import com.assist4j.core.Constant;
+import com.yuweix.assist4j.core.ActionUtil;
+import com.yuweix.assist4j.core.Constant;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
 package com.assist4j.boot.smtp;
 
 
-import com.assist4j.core.springboot.SmtpConf;
+import com.yuweix.assist4j.core.springboot.SmtpConf;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

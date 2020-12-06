@@ -1,7 +1,7 @@
 package com.assist4j.web;
 
 
-import com.assist4j.core.Constant;
+import com.yuweix.assist4j.core.Constant;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

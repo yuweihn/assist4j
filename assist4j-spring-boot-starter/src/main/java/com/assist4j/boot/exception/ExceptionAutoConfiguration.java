@@ -3,9 +3,9 @@ package com.assist4j.boot.exception;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
-import com.assist4j.core.Response;
-import com.assist4j.core.exception.ExceptionHandler;
-import com.assist4j.core.exception.ExceptionViewResolver;
+import com.yuweix.assist4j.core.Response;
+import com.yuweix.assist4j.core.exception.ExceptionHandler;
+import com.yuweix.assist4j.core.exception.ExceptionViewResolver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

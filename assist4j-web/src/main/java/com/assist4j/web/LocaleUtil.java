@@ -4,8 +4,8 @@ package com.assist4j.web;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
-import com.assist4j.core.ActionUtil;
-import com.assist4j.core.Constant;
+import com.yuweix.assist4j.core.ActionUtil;
+import com.yuweix.assist4j.core.Constant;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
