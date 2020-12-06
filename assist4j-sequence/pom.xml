@@ -6,11 +6,11 @@
 	<groupId>com.assist4j</groupId>
 	<artifactId>assist4j-sequence</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.52</version>
+	<version>1.0.0</version>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>The Project of Assist4j</description>
-	<url>https://assist4j.com</url>
+	<url>https://www.yuweix.com</url>
 
 	<properties>
 		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
@@ -92,7 +92,7 @@
 		<developer>
 			<name>yuwei</name>
 			<email>yuwei@yuweix.com</email>
-			<url>https://assist4j.com</url>
+			<url>https://www.yuweix.com</url>
 		</developer>
 	</developers>
 

@@ -3,14 +3,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.assist4j</groupId>
+    <groupId>com.yuweix</groupId>
     <artifactId>assist4j-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.52</version>
+    <version>1.0.0</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>The Project of Assist4j</description>
-    <url>https://assist4j.com</url>
+    <url>https://www.yuweix.com</url>
 
     <properties>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
@@ -51,7 +51,7 @@
         <developer>
             <name>yuwei</name>
             <email>yuwei@yuweix.com</email>
-            <url>https://assist4j.com</url>
+            <url>https://www.yuweix.com</url>
         </developer>
     </developers>
 
