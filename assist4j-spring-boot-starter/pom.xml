@@ -6,7 +6,7 @@
 	<groupId>com.yuweix.boot</groupId>
 	<artifactId>assist4j-spring-boot-starter</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>The Project of Assist4j</description>
