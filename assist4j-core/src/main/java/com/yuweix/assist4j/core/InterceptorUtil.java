@@ -7,7 +7,7 @@ import org.springframework.web.method.HandlerMethod;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public abstract class InterceptorUtil {
 	public static boolean hasResponseBodyAnnotation(Object handler) {

@@ -3,7 +3,7 @@ package com.yuweix.assist4j.data.ds;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public class DataSourceHolder {
 	private static final ThreadLocal<String> dataSources = new ThreadLocal<String>();

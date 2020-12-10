@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public class GuavaUtil {
 	private static final Logger log = LoggerFactory.getLogger(GuavaUtil.class);

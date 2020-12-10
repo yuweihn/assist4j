@@ -12,7 +12,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public abstract class LocaleUtil {
 	public static Locale getLocale(){

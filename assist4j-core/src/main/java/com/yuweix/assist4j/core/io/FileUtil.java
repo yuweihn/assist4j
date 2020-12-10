@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 文件处理工具
- * @author wei
+ * @author yuwei
  */
 public abstract class FileUtil extends StreamUtil {
 	private static final Logger log = LoggerFactory.getLogger(FileUtil.class);

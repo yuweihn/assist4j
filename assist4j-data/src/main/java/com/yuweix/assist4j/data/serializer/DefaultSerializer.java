@@ -9,7 +9,7 @@ import java.io.*;
 
 /**
  * 序列化工具
- * @author wei
+ * @author yuwei
  */
 public class DefaultSerializer implements Serializer {
 	private static final Logger log = LoggerFactory.getLogger(DefaultSerializer.class);

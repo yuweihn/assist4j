@@ -6,7 +6,7 @@ import org.springframework.context.MessageSource;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public class TextUtil {
 	private static MessageSource messageSource;

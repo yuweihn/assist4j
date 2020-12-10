@@ -18,7 +18,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public abstract class ActionUtil {
 	/**

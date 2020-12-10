@@ -7,7 +7,7 @@ import org.hibernate.Session;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public class IndexModifyCallback extends IndexParamCallback {
 	protected String sql;

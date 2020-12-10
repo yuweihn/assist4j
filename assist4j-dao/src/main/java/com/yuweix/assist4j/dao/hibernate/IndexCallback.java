@@ -10,7 +10,7 @@ import org.hibernate.transform.Transformers;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public class IndexCallback extends IndexParamCallback {
 	protected String sql;

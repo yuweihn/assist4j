@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 图片处理工具
- * @author wei
+ * @author yuwei
  */
 public abstract class ImageFileUtil extends FileUtil {
 	private static final Logger log = LoggerFactory.getLogger(ImageFileUtil.class);

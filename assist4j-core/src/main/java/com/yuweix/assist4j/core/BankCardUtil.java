@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 /**
  * 银行卡工具类
- * @author wei
+ * @author yuwei
  */
 public abstract class BankCardUtil {
 	/**

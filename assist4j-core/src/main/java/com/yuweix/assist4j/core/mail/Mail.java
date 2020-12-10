@@ -6,7 +6,7 @@ import javax.activation.DataSource;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public class Mail {
 	private String senderName;

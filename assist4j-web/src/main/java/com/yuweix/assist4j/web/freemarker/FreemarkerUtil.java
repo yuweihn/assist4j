@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public class FreemarkerUtil {
     private static Configuration cfg;

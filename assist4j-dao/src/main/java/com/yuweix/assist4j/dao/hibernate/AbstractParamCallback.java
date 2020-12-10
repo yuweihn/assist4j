@@ -5,7 +5,7 @@ import org.springframework.orm.hibernate4.HibernateCallback;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public abstract class AbstractParamCallback implements HibernateCallback<Object> {
 	protected static final int DEFAULT_PAGE_SIZE = 10;

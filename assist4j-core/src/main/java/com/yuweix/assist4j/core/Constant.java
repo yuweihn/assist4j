@@ -2,7 +2,7 @@ package com.yuweix.assist4j.core;
 
 
 /**
- * @author wei
+ * @author yuwei
  **/
 public abstract class Constant {
 	public static final String ENCODING_UTF_8 = "utf-8";

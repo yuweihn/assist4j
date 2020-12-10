@@ -9,7 +9,7 @@ import java.util.List;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public class DataSourceCluster {
 	private String key;

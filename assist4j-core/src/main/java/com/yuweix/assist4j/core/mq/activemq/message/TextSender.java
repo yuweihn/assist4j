@@ -11,7 +11,7 @@ import javax.jms.Session;
 
 /**
  * 消息发送器
- * @author wei
+ * @author yuwei
  */
 public class TextSender implements ISender {
 	private JmsTemplate jmsTemplate;

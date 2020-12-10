@@ -8,7 +8,7 @@ import java.io.InputStream;
 
 /**
  * 流处理工具
- * @author wei
+ * @author yuwei
  */
 public abstract class StreamUtil {
 	public static byte[] read(InputStream is) {

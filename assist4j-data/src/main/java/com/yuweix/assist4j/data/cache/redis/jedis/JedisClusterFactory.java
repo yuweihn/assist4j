@@ -13,7 +13,7 @@ import redis.clients.jedis.JedisCluster;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public class JedisClusterFactory implements FactoryBean<JedisCluster> {
 	private List<HostAndPort> redisNodeList;

@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 
 
 /**
- * @author wei
+ * @author yuwei
  */
 public abstract class AbstractDao<T extends Serializable, PK extends Serializable> implements Dao<T, PK> {
 	private Class<T> clz;

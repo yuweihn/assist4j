@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 序列化工具
- * @author wei
+ * @author yuwei
  */
 public abstract class SerializeUtil {
 	private static final Logger log = LoggerFactory.getLogger(SerializeUtil.class);
