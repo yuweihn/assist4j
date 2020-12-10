@@ -34,7 +34,7 @@ public class DeleteSqlProvider extends AbstractProvider {
 				}
 			}
 			if (!whereSet) {
-				throw new IllegalAccessException("'where' is missed.");
+				throw new IllegalAccessException("'where' is required.");
 			}
 		}}.toString();
 	}
@@ -60,7 +60,7 @@ public class DeleteSqlProvider extends AbstractProvider {
 				}
 			}
 			if (!whereSet) {
-				throw new IllegalAccessException("'where' is missed.");
+				throw new IllegalAccessException("'where' is required.");
 			}
 		}}.toString();
 	}
@@ -71,7 +71,7 @@ public class DeleteSqlProvider extends AbstractProvider {
 		final String tableName = getTableName(entityClass);
 		final Criteria criteria = (Criteria) param.get("criteria");
 		if (criteria == null || criteria.getParams() == null || criteria.getParams().size() <= 0) {
-			throw new IllegalAccessException("'where' is missed.");
+			throw new IllegalAccessException("'where' is required.");
 		}
 		return new SQL() {{
 			DELETE_FROM(tableName);

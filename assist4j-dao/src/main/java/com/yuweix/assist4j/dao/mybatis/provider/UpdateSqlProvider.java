@@ -60,7 +60,7 @@ public class UpdateSqlProvider extends AbstractProvider {
 				}
 			}
 			if (!whereSet) {
-				throw new IllegalAccessException("'where' is missed.");
+				throw new IllegalAccessException("'where' is required.");
 			}
 		}}.toString();
 	}
@@ -80,7 +80,7 @@ public class UpdateSqlProvider extends AbstractProvider {
 		final List<String> excludeFields = (List<String>) param.get("excludeFields");
 		final Criteria criteria = (Criteria) param.get("criteria");
 		if (criteria == null || criteria.getParams() == null || criteria.getParams().size() <= 0) {
-			throw new IllegalAccessException("'where' is missed.");
+			throw new IllegalAccessException("'where' is required.");
 		}
 		final String tableName = getTableName(entityClass);
 		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
