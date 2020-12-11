@@ -25,11 +25,11 @@ public class UpdateSqlProvider extends AbstractProvider {
 		return toUpdateByPrimaryKeySql(t, true);
 	}
 
-	private <T>String toUpdateByPrimaryKeySql(T t, boolean selective) throws IllegalAccessException {
+	private <T>String toUpdateByPrimaryKeySql(final T t, final boolean selective) throws IllegalAccessException {
 		Class<?> entityClass = t.getClass();
-		StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
 
-		List<FieldColumn> fcList = getPersistFieldList(entityClass);
+		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
 			boolean whereSet = false;
 			for (FieldColumn fc: fcList) {
@@ -85,18 +85,18 @@ public class UpdateSqlProvider extends AbstractProvider {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T>String toUpdateByCriteriaSql(Map<String, Object> param, boolean selective) throws IllegalAccessException {
-		T t = (T) param.get("t");
+	private <T>String toUpdateByCriteriaSql(Map<String, Object> param, final boolean selective) throws IllegalAccessException {
+		final T t = (T) param.get("t");
 		Class<?> entityClass = t.getClass();
-		List<String> excludeFields = (List<String>) param.get("excludeFields");
-		Criteria criteria = (Criteria) param.get("criteria");
+		final List<String> excludeFields = (List<String>) param.get("excludeFields");
+		final Criteria criteria = (Criteria) param.get("criteria");
 		if (criteria == null || criteria.getParams() == null || criteria.getParams().size() <= 0) {
 			throw new IllegalAccessException("'where' is required.");
 		}
-		StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
 
-		Object shardingVal = criteria.getShardingVal();
-		List<FieldColumn> fcList = getPersistFieldList(entityClass);
+		final Object shardingVal = criteria.getShardingVal();
+		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
 			for (FieldColumn fc: fcList) {
 				Field field = fc.getField();
