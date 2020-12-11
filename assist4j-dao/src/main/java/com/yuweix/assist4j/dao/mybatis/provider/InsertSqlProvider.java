@@ -18,14 +18,15 @@ public class InsertSqlProvider extends AbstractProvider {
 	public <T>String insert(T t) throws IllegalAccessException {
 		return toInsertSql(t, false);
 	}
-	
+
 	public <T>String insertSelective(T t) throws IllegalAccessException {
 		return toInsertSql(t, true);
 	}
 
 	private <T>String toInsertSql(final T t, final boolean selective) throws IllegalAccessException {
 		Class<?> entityClass = t.getClass();
-		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final String tbName = getTableName(entityClass);
+		final StringBuilder tableNameBuilder = new StringBuilder(tbName);
 
 		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
@@ -33,7 +34,7 @@ public class InsertSqlProvider extends AbstractProvider {
 				Field field = fc.getField();
 				field.setAccessible(true);
 
-				String shardingIndex = getShardingIndex(field.getAnnotation(Sharding.class), getFieldValue(field, t));
+				String shardingIndex = getShardingIndex(field.getAnnotation(Sharding.class), tbName, getFieldValue(field, t));
 				if (shardingIndex != null) {
 					tableNameBuilder.append("_").append(shardingIndex);
 				}

@@ -27,7 +27,8 @@ public class UpdateSqlProvider extends AbstractProvider {
 
 	private <T>String toUpdateByPrimaryKeySql(final T t, final boolean selective) throws IllegalAccessException {
 		Class<?> entityClass = t.getClass();
-		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final String tbName = getTableName(entityClass);
+		final StringBuilder tableNameBuilder = new StringBuilder(tbName);
 
 		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
@@ -36,7 +37,7 @@ public class UpdateSqlProvider extends AbstractProvider {
 				Field field = fc.getField();
 				field.setAccessible(true);
 
-				String shardingIndex = getShardingIndex(field.getAnnotation(Sharding.class), getFieldValue(field, t));
+				String shardingIndex = getShardingIndex(field.getAnnotation(Sharding.class), tbName, getFieldValue(field, t));
 				Id idAnn = field.getAnnotation(Id.class);
 				if (shardingIndex != null) {
 					tableNameBuilder.append("_").append(shardingIndex);
@@ -93,7 +94,8 @@ public class UpdateSqlProvider extends AbstractProvider {
 		if (criteria == null || criteria.getParams() == null || criteria.getParams().size() <= 0) {
 			throw new IllegalAccessException("'where' is required.");
 		}
-		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final String tbName = getTableName(entityClass);
+		final StringBuilder tableNameBuilder = new StringBuilder(tbName);
 
 		final Object shardingVal = criteria.getShardingVal();
 		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
@@ -107,7 +109,7 @@ public class UpdateSqlProvider extends AbstractProvider {
 					if (shardingVal == null) {
 						throw new IllegalAccessException("'Sharding Value' is required.");
 					}
-					String shardingIndex = getShardingIndex(sharding, shardingVal);
+					String shardingIndex = getShardingIndex(sharding, tbName, shardingVal);
 					if (shardingIndex != null) {
 						tableNameBuilder.append("_").append(shardingIndex);
 						/**

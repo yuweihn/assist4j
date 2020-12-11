@@ -19,12 +19,4 @@ public @interface Sharding {
      * @return   分片策略
      */
     Class<? extends Strategy> strategy() default ModStrategy.class;
-
-    /**
-     * 逻辑表后占位符长度
-     * eg.
-     * user  ====  user_0000
-     * @return   逻辑表后占位符长度
-     */
-    int suffixLength() default 4;
 }

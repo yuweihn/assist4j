@@ -21,7 +21,7 @@ public class SelectSqlProvider extends AbstractProvider {
 //		PK id = (PK) param.get("id");
 		Class<T> entityClass = (Class<T>) param.get("clz");
 		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
-		
+
 		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
 			boolean hasSharding = false;
@@ -36,7 +36,7 @@ public class SelectSqlProvider extends AbstractProvider {
 				}
 
 				SELECT(fc.getColumnName() + " as " + field.getName());
-				
+
 				Id idAnn = field.getAnnotation(Id.class);
 				if (idAnn != null) {
 					WHERE(fc.getColumnName() + " = #{id}");
@@ -58,7 +58,8 @@ public class SelectSqlProvider extends AbstractProvider {
 //		PK id = (PK) param.get("id");
 		Class<T> entityClass = (Class<T>) param.get("clz");
 		final Object shardingVal = param.get("shardingVal");
-		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final String tbName = getTableName(entityClass);
+		final StringBuilder tableNameBuilder = new StringBuilder(tbName);
 
 		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
@@ -67,7 +68,7 @@ public class SelectSqlProvider extends AbstractProvider {
 				Field field = fc.getField();
 				SELECT(fc.getColumnName() + " as " + field.getName());
 
-				String shardingIndex = getShardingIndex(field.getAnnotation(Sharding.class), shardingVal);
+				String shardingIndex = getShardingIndex(field.getAnnotation(Sharding.class), tbName, shardingVal);
 				Id idAnn = field.getAnnotation(Id.class);
 				if (shardingIndex != null) {
 					tableNameBuilder.append("_").append(shardingIndex);
@@ -97,7 +98,8 @@ public class SelectSqlProvider extends AbstractProvider {
 	public <T>String findCount(Map<String, Object> param) throws IllegalAccessException {
 		Criteria criteria = (Criteria) param.get("criteria");
 		Class<T> entityClass = (Class<T>) param.get("clazz");
-		StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		String tbName = getTableName(entityClass);
+		StringBuilder tableNameBuilder = new StringBuilder(tbName);
 
 		Object shardingVal = criteria == null ? null : criteria.getShardingVal();
 		List<FieldColumn> fcList = getPersistFieldList(entityClass);
@@ -110,7 +112,7 @@ public class SelectSqlProvider extends AbstractProvider {
 				if (shardingVal == null) {
 					throw new IllegalAccessException("'Sharding Value' is required.");
 				}
-				String shardingIndex = getShardingIndex(sharding, shardingVal);
+				String shardingIndex = getShardingIndex(sharding, tbName, shardingVal);
 				if (shardingIndex != null) {
 					tableNameBuilder.append("_").append(shardingIndex);
 					/**
@@ -153,7 +155,8 @@ public class SelectSqlProvider extends AbstractProvider {
 		if (param.containsKey("pageSize")) {
 			pageSize0 = (Integer) param.get("pageSize");
 		}
-		StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		String tbName = getTableName(entityClass);
+		StringBuilder tableNameBuilder = new StringBuilder(tbName);
 
 		Object shardingVal = criteria == null ? null : criteria.getShardingVal();
 		List<FieldColumn> fcList = getPersistFieldList(entityClass);
@@ -166,7 +169,7 @@ public class SelectSqlProvider extends AbstractProvider {
 				if (shardingVal == null) {
 					throw new IllegalAccessException("'Sharding Value' is required.");
 				}
-				String shardingIndex = getShardingIndex(sharding, shardingVal);
+				String shardingIndex = getShardingIndex(sharding, tbName, shardingVal);
 				if (shardingIndex != null) {
 					tableNameBuilder.append("_").append(shardingIndex);
 					/**

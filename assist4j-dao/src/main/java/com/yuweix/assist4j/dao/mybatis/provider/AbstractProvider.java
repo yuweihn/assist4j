@@ -219,13 +219,13 @@ public abstract class AbstractProvider {
 		}
 	}
 
-	protected String getShardingIndex(Sharding sharding, Object shardingVal) {
+	protected String getShardingIndex(Sharding sharding, String tableName, Object shardingVal) {
 		if (sharding == null) {
 			return null;
 		}
 		try {
 			Strategy shardingStrategy = sharding.strategy().newInstance();
-			return shardingStrategy.getShardingIndex(shardingVal, sharding.suffixLength());
+			return shardingStrategy.getShardingIndex(tableName, shardingVal);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
