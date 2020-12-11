@@ -3,11 +3,14 @@ package com.yuweix.assist4j.dao.sharding;
 
 
 /**
- * 分片策略-取模
+ * 分片策略-对2取模
  * @author yuwei
  */
 public class ModStrategy implements Strategy {
-    public String getShardingIndex(Object val, int suffixLength, int shardingSize) {
+    private int shardingSize = 2;
+
+    @Override
+    public String getShardingIndex(Object val, int suffixLength) {
         return String.format("%0" + suffixLength + "d", hash(val) % shardingSize);
     }
 
