@@ -36,7 +36,7 @@ public class SelectSqlProvider extends AbstractProvider {
 			}
 			FROM(tableName);
 			if (!whereSet) {
-				throw new IllegalAccessException("'where' is missed.");
+				throw new IllegalAccessException("'where' is required.");
 			}
 		}}.toString();
 	}
