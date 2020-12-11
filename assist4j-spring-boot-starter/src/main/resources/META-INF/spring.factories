@@ -10,4 +10,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.yuweix.assist
   com.yuweix.assist4j.boot.smtp.SmtpAutoConfiguration,\
   com.yuweix.assist4j.boot.web.WebAutoConfiguration,\
   com.yuweix.assist4j.boot.web.FreeMarkerAutoConfiguration,\
-  com.yuweix.assist4j.boot.exception.ExceptionAutoConfiguration
+  com.yuweix.assist4j.boot.exception.ExceptionAutoConfiguration,\
+  com.yuweix.assist4j.boot.dao.ShardingAutoConfiguration
