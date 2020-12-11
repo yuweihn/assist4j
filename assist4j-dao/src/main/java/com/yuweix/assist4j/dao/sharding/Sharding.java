@@ -18,7 +18,7 @@ public @interface Sharding {
      * 分片策略
      * @return   分片策略
      */
-    Class<?> strategy() default ModStrategy.class;
+    Class<? extends Strategy> strategy() default ModStrategy.class;
 
     /**
      * 分片数量
