@@ -1,6 +1,9 @@
 package com.yuweix.assist4j.dao.mybatis.provider;
 
 
+import com.yuweix.assist4j.dao.sharding.Sharding;
+import com.yuweix.assist4j.dao.sharding.Strategy;
+
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -202,6 +205,30 @@ public abstract class AbstractProvider {
 		}
 		public Field getField() {
 			return field;
+		}
+	}
+
+	protected Object getFieldValue(Field field, Object t) {
+		if (!field.isAccessible()) {
+			field.setAccessible(true);
+		}
+		try {
+			return field.get(t);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String getShardingIndex(Sharding sharding, Object shardingVal) {
+		if (sharding == null) {
+			return null;
+		}
+		try {
+			Strategy shardingStrategy = (Strategy) sharding.strategy().newInstance();
+			return shardingStrategy.getShardingIndex(shardingVal
+					, sharding.suffixLength(), sharding.shardingSize());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

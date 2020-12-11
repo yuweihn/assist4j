@@ -18,6 +18,10 @@ public class Criteria implements Serializable {
 	private StringBuilder sql;
 	private Map<String, Object> params;
 	private int pindex;
+	/**
+	 * 分片字段的值
+	 */
+	private Object shardingVal;
 
 	private Criteria() {
 		sql = new StringBuilder("");
@@ -52,10 +56,10 @@ public class Criteria implements Serializable {
 	private Criteria add(Connector connector, String criterionSql) {
 		if (criterionSql != null && !"".equals(criterionSql.trim())) {
 			sql.append(" ")
-					.append(connector.getCode())
-					.append(" ")
-					.append(criterionSql)
-					.append(" ");
+				.append(connector.getCode())
+				.append(" ")
+				.append(criterionSql)
+				.append(" ");
 		}
 		return this;
 	}
@@ -79,11 +83,11 @@ public class Criteria implements Serializable {
 		String criteriaSql = criteria.toSql();
 		if (criteriaSql != null && !"".equals(criteriaSql.trim())) {
 			sql.insert(0, "(")
-					.append(") ")
-					.append(connector.getCode())
-					.append(" (")
-					.append(criteriaSql)
-					.append(") ");
+				.append(") ")
+				.append(connector.getCode())
+				.append(" (")
+				.append(criteriaSql)
+				.append(") ");
 		}
 		return this;
 	}
@@ -94,11 +98,20 @@ public class Criteria implements Serializable {
 		return add(Connector.or, criteria);
 	}
 
+	public Criteria addSharding(Object shardingVal) {
+		this.shardingVal = shardingVal;
+		return this;
+	}
+
 	public String toSql() {
 		return sql.toString();
 	}
 
 	public Map<String, Object> getParams() {
 		return params;
+	}
+
+	public Object getShardingVal() {
+		return shardingVal;
 	}
 }

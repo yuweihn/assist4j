@@ -20,6 +20,9 @@ public interface DeleteMapper<T extends Serializable, PK extends Serializable> {
 	@DeleteProvider(type = DeleteSqlProvider.class, method = "deleteByKey")
 	int deleteByKey(@Param("id") PK id, @Param("clz") Class<T> clz);
 
-    @UpdateProvider(type = DeleteSqlProvider.class, method = "deleteByCriteria")
-    int deleteByCriteria(@Param("criteria") Criteria criteria, @Param("clz") Class<T> clz);
+	@DeleteProvider(type = DeleteSqlProvider.class, method = "deleteByKeySharding")
+	int deleteByKeySharding(@Param("id") PK id, @Param("shardingVal") Object shardingVal, @Param("clz") Class<T> clz);
+
+	@UpdateProvider(type = DeleteSqlProvider.class, method = "deleteByCriteria")
+	int deleteByCriteria(@Param("criteria") Criteria criteria, @Param("clz") Class<T> clz);
 }

@@ -8,9 +8,6 @@ import java.util.List;
 
 /**
  * @author yuwei
- *
- * @param <T>
- * @param <PK>
  */
 public interface Dao<T extends Serializable, PK extends Serializable> {
 	List<T> getAll();

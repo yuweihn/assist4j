@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Options;
 
 import java.io.Serializable;
-import java.util.List;
 
 
 /**
@@ -20,8 +19,4 @@ public interface InsertMapper<T extends Serializable, PK extends Serializable> {
 	@Options(useGeneratedKeys = true)
 	@InsertProvider(type = InsertSqlProvider.class, method = "insertSelective")
 	int insertSelective(T t);
-
-	@Options(useGeneratedKeys = true)
-	@InsertProvider(type = InsertSqlProvider.class, method = "batchInsert")
-	int batchInsert(List<T> list);
 }
