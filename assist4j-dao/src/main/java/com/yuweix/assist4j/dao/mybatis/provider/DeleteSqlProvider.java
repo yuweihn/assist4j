@@ -16,11 +16,11 @@ import java.util.Map;
  */
 public class DeleteSqlProvider extends AbstractProvider {
 
-	public <T>String delete(T t) throws IllegalAccessException {
+	public <T>String delete(final T t) throws IllegalAccessException {
 		Class<?> entityClass = t.getClass();
-		StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
 
-		List<FieldColumn> fcList = getPersistFieldList(entityClass);
+		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
 			boolean whereSet = false;
 
@@ -60,9 +60,9 @@ public class DeleteSqlProvider extends AbstractProvider {
 	public <PK, T>String deleteByKey(Map<String, Object> param) throws IllegalAccessException {
 //		PK id = (PK) param.get("id");
 		Class<T> entityClass = (Class<T>) param.get("clz");
-		StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
 
-		List<FieldColumn> fcList = getPersistFieldList(entityClass);
+		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
 			boolean hasSharding = false;
 			boolean whereSet = false;
@@ -96,10 +96,10 @@ public class DeleteSqlProvider extends AbstractProvider {
 	public <PK, T>String deleteByKeySharding(Map<String, Object> param) throws IllegalAccessException {
 //		PK id = (PK) param.get("id");
 		Class<T> entityClass = (Class<T>) param.get("clz");
-		Object shardingVal = param.get("shardingVal");
-		StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final Object shardingVal = param.get("shardingVal");
+		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
 
-		List<FieldColumn> fcList = getPersistFieldList(entityClass);
+		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
 			boolean whereSet = false;
 
@@ -135,14 +135,14 @@ public class DeleteSqlProvider extends AbstractProvider {
 	@SuppressWarnings("unchecked")
 	public <T>String deleteByCriteria(Map<String, Object> param) throws IllegalAccessException {
 		Class<T> entityClass = (Class<T>) param.get("clz");
-		StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
-		Criteria criteria = (Criteria) param.get("criteria");
+		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final Criteria criteria = (Criteria) param.get("criteria");
 		if (criteria == null || criteria.getParams() == null || criteria.getParams().size() <= 0) {
 			throw new IllegalAccessException("'where' is required.");
 		}
 
-		Object shardingVal = criteria.getShardingVal();
-		List<FieldColumn> fcList = getPersistFieldList(entityClass);
+		final Object shardingVal = criteria.getShardingVal();
+		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
 			for (FieldColumn fc: fcList) {
 				Field field = fc.getField();

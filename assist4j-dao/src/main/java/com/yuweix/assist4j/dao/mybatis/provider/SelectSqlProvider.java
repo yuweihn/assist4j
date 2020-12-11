@@ -20,9 +20,9 @@ public class SelectSqlProvider extends AbstractProvider {
 	public <PK, T>String selectOneById(Map<String, Object> param) throws IllegalAccessException {
 //		PK id = (PK) param.get("id");
 		Class<T> entityClass = (Class<T>) param.get("clz");
-		StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
 		
-		List<FieldColumn> fcList = getPersistFieldList(entityClass);
+		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
 			boolean hasSharding = false;
 			boolean whereSet = false;
@@ -57,10 +57,10 @@ public class SelectSqlProvider extends AbstractProvider {
 	public <PK, T>String selectOneByIdSharding(Map<String, Object> param) throws IllegalAccessException {
 //		PK id = (PK) param.get("id");
 		Class<T> entityClass = (Class<T>) param.get("clz");
-		Object shardingVal = param.get("shardingVal");
-		StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final Object shardingVal = param.get("shardingVal");
+		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
 
-		List<FieldColumn> fcList = getPersistFieldList(entityClass);
+		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
 			boolean whereSet = false;
 			for (FieldColumn fc: fcList) {

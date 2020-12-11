@@ -23,11 +23,11 @@ public class InsertSqlProvider extends AbstractProvider {
 		return toInsertSql(t, true);
 	}
 
-	private <T>String toInsertSql(T t, boolean selective) throws IllegalAccessException {
+	private <T>String toInsertSql(final T t, final boolean selective) throws IllegalAccessException {
 		Class<?> entityClass = t.getClass();
-		StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
+		final StringBuilder tableNameBuilder = new StringBuilder(getTableName(entityClass));
 
-		List<FieldColumn> fcList = getPersistFieldList(entityClass);
+		final List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		return new SQL() {{
 			for (FieldColumn fc: fcList) {
 				Field field = fc.getField();
