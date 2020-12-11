@@ -224,7 +224,7 @@ public abstract class AbstractProvider {
 			return null;
 		}
 		try {
-			Strategy shardingStrategy = (Strategy) sharding.strategy().newInstance();
+			Strategy shardingStrategy = sharding.strategy().newInstance();
 			return shardingStrategy.getShardingIndex(shardingVal
 					, sharding.suffixLength(), sharding.shardingSize());
 		} catch (Exception e) {
