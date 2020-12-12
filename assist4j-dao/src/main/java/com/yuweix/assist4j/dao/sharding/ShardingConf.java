@@ -14,11 +14,11 @@ import java.util.Map;
  * @author yuwei
  */
 public class ShardingConf {
-    @ConditionalOnMissingBean(name = "shardingBeanHolder")
-    @Bean(name = "shardingBeanHolder")
+    @ConditionalOnMissingBean(name = "shardingTableHolder")
+    @Bean(name = "shardingTableHolder")
     @ConfigurationProperties(prefix = "assist4j", ignoreUnknownFields = true)
-    public ShardingBeanHolder shardingBeanHolder() {
-        return new ShardingBeanHolder() {
+    public ShardingTableHolder shardingTableHolder() {
+        return new ShardingTableHolder() {
             private Map<String, Config> conf = new HashMap<String, Config>();
 
             @Override
@@ -29,8 +29,8 @@ public class ShardingConf {
     }
 
     @Bean(name = "ShardingConf$tableConf")
-    public Map<String, Config> initTableConfMap(@Qualifier("shardingBeanHolder") ShardingBeanHolder shardingBeanHolder) {
-        Map<String, Config> conf = shardingBeanHolder.getShardingConf();
+    public Map<String, Config> initTableConfMap(@Qualifier("shardingTableHolder") ShardingTableHolder shardingTableHolder) {
+        Map<String, Config> conf = shardingTableHolder.getShardingConf();
 
         Strategy.confMap.clear();
         if (conf != null) {

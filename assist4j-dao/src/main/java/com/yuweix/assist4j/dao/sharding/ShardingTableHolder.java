@@ -7,6 +7,6 @@ import java.util.Map;
 /**
  * @author yuwei
  **/
-public interface ShardingBeanHolder {
+public interface ShardingTableHolder {
     Map<String, Config> getShardingConf();
 }
