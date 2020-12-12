@@ -5,7 +5,7 @@ package com.yuweix.assist4j.dao.sharding;
  * 分片策略-取模
  * @author yuwei
  */
-public class ModStrategy extends AbstractStrategy {
+public class ModStrategy implements Strategy {
     @Override
     public String getShardingIndex(String tableName, Object shardingVal) {
         Config conf = confMap.get(tableName);
