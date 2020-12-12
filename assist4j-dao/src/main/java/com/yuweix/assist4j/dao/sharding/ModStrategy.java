@@ -1,7 +1,6 @@
 package com.yuweix.assist4j.dao.sharding;
 
 
-
 /**
  * 分片策略-取模
  * @author yuwei
@@ -9,7 +8,7 @@ package com.yuweix.assist4j.dao.sharding;
 public class ModStrategy extends AbstractStrategy {
     @Override
     public String getShardingIndex(String tableName, Object shardingVal) {
-        ShardingBeanHolder.Config conf = confMap.get(tableName);
+        Config conf = confMap.get(tableName);
         if (conf == null) {
             throw new RuntimeException("[" + tableName + "]'s sharding-conf is required.");
         }

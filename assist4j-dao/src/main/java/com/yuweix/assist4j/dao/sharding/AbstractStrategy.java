@@ -9,5 +9,5 @@ import java.util.Map;
  */
 public abstract class AbstractStrategy implements Strategy {
     public static final String FIELD_CONF_MAP_NAME = "confMap";
-    protected static Map<String, ShardingBeanHolder.Config> confMap;
+    protected static Map<String, Config> confMap;
 }
