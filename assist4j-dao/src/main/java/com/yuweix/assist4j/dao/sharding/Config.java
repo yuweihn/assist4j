@@ -8,7 +8,7 @@ public class Config {
     /**
      * 逻辑表后占位符长度
      * eg.
-     * user  ====  user_0000
+     * user  ====>>>>  user_0000
      * @return   逻辑表后占位符长度
      */
     private int suffixLength = 4;
