@@ -11,7 +11,7 @@ public class Config {
      * user  ====  user_0000
      * @return   逻辑表后占位符长度
      */
-    private int suffixLength;
+    private int suffixLength = 4;
     /**
      * 分片数量
      */
