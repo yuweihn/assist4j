@@ -230,4 +230,20 @@ public abstract class AbstractProvider {
 			throw new RuntimeException(e);
 		}
 	}
+
+	protected String getPhysicalTable(Class<?> entityClass, Object shardingVal) {
+		String tbName = getTableName(entityClass);
+		List<FieldColumn> fcList = getPersistFieldList(entityClass);
+		for (FieldColumn fc: fcList) {
+			Field field = fc.getField();
+			Sharding sharding = field.getAnnotation(Sharding.class);
+			if (sharding == null) {
+				continue;
+			}
+
+			String shardingIndex = getShardingIndex(sharding, tbName, shardingVal);
+			return tbName + "_" + shardingIndex;
+		}
+		return tbName;
+	}
 }
