@@ -1,20 +1,21 @@
 package com.yuweix.assist4j.http.ssl;
 
 
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 
 
 /**
- * https绕过证书验证
+ * 1、不进行主机名验证
+ * 2、不进行SSL信任验证
  * @author yuwei
  */
 public class TrustAllSslSocketFactory extends SSLConnectionSocketFactory {
@@ -23,7 +24,7 @@ public class TrustAllSslSocketFactory extends SSLConnectionSocketFactory {
 	private static final Lock lock = new ReentrantLock();
 
 	private TrustAllSslSocketFactory(SSLContext sslContext) {
-		super(sslContext, SUPPORTED_PROTOCOLS, null, getDefaultHostnameVerifier());
+		super(sslContext, SUPPORTED_PROTOCOLS, null, NoopHostnameVerifier.INSTANCE);
 	}
 
 	public static TrustAllSslSocketFactory get() {
@@ -48,7 +49,7 @@ public class TrustAllSslSocketFactory extends SSLConnectionSocketFactory {
 		try {
 			return new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
 				@Override
-				public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+				public boolean isTrusted(X509Certificate[] chain, String authType) {
 					return true;
 				}
 			}).build();
