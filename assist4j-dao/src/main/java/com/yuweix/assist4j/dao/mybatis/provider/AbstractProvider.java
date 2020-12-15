@@ -231,7 +231,7 @@ public abstract class AbstractProvider {
 		}
 	}
 
-	protected String getPhysicalTable(Class<?> entityClass, Object shardingVal) {
+	protected String getPhysicalTableName(Class<?> entityClass, Object shardingVal) {
 		String tbName = getTableName(entityClass);
 		List<FieldColumn> fcList = getPersistFieldList(entityClass);
 		for (FieldColumn fc: fcList) {
