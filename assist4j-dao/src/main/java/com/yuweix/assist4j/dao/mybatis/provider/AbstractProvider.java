@@ -237,12 +237,10 @@ public abstract class AbstractProvider {
 		for (FieldColumn fc: fcList) {
 			Field field = fc.getField();
 			Sharding sharding = field.getAnnotation(Sharding.class);
-			if (sharding == null) {
-				continue;
+			if (sharding != null) {
+				String shardingIndex = getShardingIndex(sharding, tbName, shardingVal);
+				return tbName + "_" + shardingIndex;
 			}
-
-			String shardingIndex = getShardingIndex(sharding, tbName, shardingVal);
-			return tbName + "_" + shardingIndex;
 		}
 		return tbName;
 	}
