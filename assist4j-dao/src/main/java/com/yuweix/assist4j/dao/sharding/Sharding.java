@@ -16,7 +16,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface Sharding {
     /**
      * 分片策略
-     * @return   分片策略
      */
     Class<? extends Strategy> strategy() default ModStrategy.class;
 }
