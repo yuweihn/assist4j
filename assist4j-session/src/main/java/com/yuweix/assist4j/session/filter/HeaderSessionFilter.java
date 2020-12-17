@@ -36,12 +36,12 @@ public class HeaderSessionFilter extends SessionFilter {
 	@Override
 	protected String getSessionId(HttpServletRequest request, HttpServletResponse response) {
 		if (key == null || "".equals(key)) {
-			return null;
+			throw new RuntimeException("[key]不能为空！！！");
 		}
 
 		String sessionId = request.getHeader(key);
 		if (sessionId == null || "".equals(sessionId.trim())) {
-			return null;
+			throw new RuntimeException("[sessionId]不能为空！！！");
 		}
 		if (responseHeader) {
 			response.setHeader(key, sessionId);
