@@ -257,6 +257,7 @@ public class CacheHttpSession implements HttpSession {
 		if (repeatValue != null && !"".equals(repeatValue.toString())) {
 			this.sessionIdKey = sessionIdKeyPre + "." + repeatValue;
 		}
+		this.access();
 	}
 
 	/**
