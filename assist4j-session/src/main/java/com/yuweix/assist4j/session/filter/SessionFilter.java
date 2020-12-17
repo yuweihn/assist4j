@@ -28,10 +28,6 @@ public class SessionFilter implements Filter {
 	private static final String EXCLUSIVE = "exclusive";
 
 
-
-
-
-
 	/**
 	 * @param cache                           缓存引擎
 	 */
@@ -54,7 +50,9 @@ public class SessionFilter implements Filter {
 	public void setApplicationName(String applicationName) {
 		SessionConf.getInstance().setApplicationName(applicationName);
 	}
-
+	public void setAddCookie(boolean addCookie) {
+		SessionConf.getInstance().setAddCookie(addCookie);
+	}
 
 
 
