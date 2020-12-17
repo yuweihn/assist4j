@@ -168,7 +168,7 @@ public class CacheHttpSession implements HttpSession {
 			if (mii <= 0) {
 				this.invalid = false;
 			} else {
-				long invalidMillis = mii * 60 * 1000;
+				long invalidMillis = mii * 60 * 1000L;
 				long lastAccessTime = getLastAccessedTime();
 				long now = Calendar.getInstance().getTimeInMillis();
 				this.invalid = (now - lastAccessTime) > invalidMillis;
@@ -227,7 +227,7 @@ public class CacheHttpSession implements HttpSession {
 		}
 
 		SessionCache sessionCache = SessionConf.getInstance().getCache();
-		long timeSec = SessionConf.getInstance().getMaxInactiveInterval() * 60;
+		long timeSec = SessionConf.getInstance().getMaxInactiveInterval() * 60L;
 
 		sessionCache.put(fullSessionId, SessionAttribute.encode(sessionAttribute), timeSec);
 		/**
