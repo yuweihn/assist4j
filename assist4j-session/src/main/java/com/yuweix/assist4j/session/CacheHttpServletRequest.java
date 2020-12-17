@@ -139,7 +139,9 @@ public class CacheHttpServletRequest extends HttpServletRequestWrapper {
 		if (sid == null || "".equals(sid)) {
 			throw new RuntimeException("生成SessionId失败！！！");
 		}
-		addCookie(sid);
+		if (SessionConf.getInstance().getAddCookie()) {
+			addCookie(sid);
+		}
 		return sid;
 	}
 
@@ -149,6 +151,6 @@ public class CacheHttpServletRequest extends HttpServletRequestWrapper {
 	private void addCookie(String sid) {
 		CookiesUtil.addCookie(request, response
 				, SessionConf.getInstance().getApplicationName() + SessionConstant.COOKIE_SESSION_ID_SUFFIX
-				, sid, null, null, SessionConstant.COOKIE_MAX_AGE_DEFAULT);
+				, sid,null,null, SessionConstant.COOKIE_MAX_AGE_DEFAULT);
 	}
 }
