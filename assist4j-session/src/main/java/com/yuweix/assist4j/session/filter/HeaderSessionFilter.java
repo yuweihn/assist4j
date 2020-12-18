@@ -1,7 +1,10 @@
 package com.yuweix.assist4j.session.filter;
 
 
+import com.yuweix.assist4j.session.SessionConstant;
 import com.yuweix.assist4j.session.cache.SessionCache;
+import com.yuweix.assist4j.session.conf.SessionConf;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
@@ -29,15 +32,16 @@ public class HeaderSessionFilter extends AbstractSessionFilter {
 
 	@Override
 	protected String getSessionId(HttpServletRequest request, HttpServletResponse response) {
-		if (key == null || "".equals(key)) {
-			throw new RuntimeException("[key]不能为空！！！");
+		String headerKey = key;
+		if (headerKey == null || "".equals(headerKey)) {
+			headerKey = SessionConf.getInstance().getApplicationName() + SessionConstant.COOKIE_SESSION_ID_SUFFIX;
 		}
 
-		String sid = request.getHeader(key);
+		String sid = request.getHeader(headerKey);
 		if (sid == null || "".equals(sid.trim())) {
 			sid = UUID.randomUUID().toString().replace("-", "");
 		}
-		response.setHeader(key, sid);
+		response.setHeader(headerKey, sid);
 		return sid;
 	}
 }
