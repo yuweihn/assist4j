@@ -85,7 +85,10 @@ public class CacheHttpServletRequest extends HttpServletRequestWrapper {
 				cacheSession = new CacheHttpSession(sessionId);
 			}
 		}
-		cacheSession.access();
+
+		if (cacheSession != null) {
+			cacheSession.access();
+		}
 		return cacheSession;
 	}
 }
