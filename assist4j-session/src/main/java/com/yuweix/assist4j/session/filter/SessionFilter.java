@@ -53,10 +53,6 @@ public class SessionFilter implements Filter {
 	public void setApplicationName(String applicationName) {
 		SessionConf.getInstance().setApplicationName(applicationName);
 	}
-	public void setAddCookie(boolean addCookie) {
-		SessionConf.getInstance().setAddCookie(addCookie);
-	}
-
 
 
 	@Override
@@ -92,9 +88,7 @@ public class SessionFilter implements Filter {
 		if (sid == null || "".equals(sid)) {
 			throw new RuntimeException("生成SessionId失败！！！");
 		}
-		if (SessionConf.getInstance().getAddCookie()) {
-			addCookie(sid, request, response);
-		}
+		addCookie(sid, request, response);
 		return sid;
 	}
 

@@ -19,7 +19,6 @@ public class SessionConf {
 	 */
 	private int maxInactiveInterval;
 	private String applicationName;
-	private boolean addCookie = true;
 	private SessionCache cache;
 
 	private SessionConf() {
@@ -74,14 +73,6 @@ public class SessionConf {
 	public String getApplicationName() {
 		Assert.notNull(applicationName, "[applicationName] is required.");
 		return applicationName;
-	}
-
-	public void setAddCookie(boolean addCookie) {
-		this.addCookie = addCookie;
-	}
-
-	public boolean getAddCookie() {
-		return addCookie;
 	}
 
 	public void check() {
