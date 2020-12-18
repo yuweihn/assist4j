@@ -1,78 +1,26 @@
 package com.yuweix.assist4j.session.filter;
 
 
-import java.io.IOException;
 import java.util.UUID;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.yuweix.assist4j.session.CacheHttpServletRequest;
 import com.yuweix.assist4j.session.CookiesUtil;
 import com.yuweix.assist4j.session.SessionConstant;
 import com.yuweix.assist4j.session.cache.SessionCache;
-import com.yuweix.assist4j.session.conf.PathPattern;
 import com.yuweix.assist4j.session.conf.SessionConf;
 
 
 /**
  * @author yuwei
  */
-public class CookieSessionFilter implements Filter {
-	/**
-	 * 需要排除的URI
-	 */
-	private static final String EXCLUSIVE = "exclusive";
-
-
-	/**
-	 * @param cache                           缓存引擎
-	 */
+public class CookieSessionFilter extends AbstractSessionFilter {
 	public CookieSessionFilter(SessionCache cache) {
-		setCache(cache);
+		super(cache);
 	}
 	public CookieSessionFilter() {
 
 	}
 
-	public void setCache(SessionCache cache) {
-		SessionConf.getInstance().setCache(cache);
-	}
-	/**
-	 * 设置session失效时间(分钟)
-	 */
-	public void setMaxInactiveInterval(int maxInactiveInterval) {
-		SessionConf.getInstance().setMaxInactiveInterval(maxInactiveInterval);
-	}
-	public void setApplicationName(String applicationName) {
-		SessionConf.getInstance().setApplicationName(applicationName);
-	}
-
-
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		HttpServletRequest httpRequest = (HttpServletRequest) request;
-		HttpServletResponse httpResponse = (HttpServletResponse) response;
-
-		PathPattern exclusivePattern = SessionConf.getInstance().getExclusivePattern();
-		if (exclusivePattern != null && exclusivePattern.matches(httpRequest)) {
-			chain.doFilter(request, response);
-			return;
-		}
-
-		before(httpRequest, httpResponse);
-		CacheHttpServletRequest cacheRequest = new CacheHttpServletRequest(httpRequest, getSessionId(httpRequest, httpResponse));
-
-		chain.doFilter(cacheRequest, httpResponse);
-		cacheRequest.sync();
-		after(cacheRequest, httpResponse);
-	}
 
 	protected String getSessionId(HttpServletRequest request, HttpServletResponse response) {
 		String sid = CookiesUtil.findValueByKey(request
@@ -99,30 +47,5 @@ public class CookieSessionFilter implements Filter {
 		CookiesUtil.addCookie(request, response
 				, SessionConf.getInstance().getApplicationName() + SessionConstant.COOKIE_SESSION_ID_SUFFIX
 				, sid,null,null, SessionConstant.COOKIE_MAX_AGE_DEFAULT);
-	}
-
-	protected void before(HttpServletRequest request, HttpServletResponse response) {
-
-	}
-
-	protected void after(HttpServletRequest request, HttpServletResponse response) {
-
-	}
-
-	@Override
-	public void init(FilterConfig config) {
-		SessionConf sessionConf = SessionConf.getInstance();
-
-		String exclusive = config.getInitParameter(EXCLUSIVE);
-		if (exclusive != null && !"".equals(exclusive.trim())) {
-			sessionConf.setExclusivePattern(exclusive.split(","));
-		}
-
-		sessionConf.check();
-	}
-
-	@Override
-	public void destroy() {
-
 	}
 }
