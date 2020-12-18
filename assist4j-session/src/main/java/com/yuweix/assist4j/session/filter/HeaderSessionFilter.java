@@ -15,7 +15,7 @@ import java.util.UUID;
  * @author yuwei
  */
 public class HeaderSessionFilter extends AbstractSessionFilter {
-	protected String key;
+	private String key;
 
 
 	public HeaderSessionFilter(SessionCache cache) {
