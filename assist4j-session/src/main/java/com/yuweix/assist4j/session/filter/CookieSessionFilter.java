@@ -29,6 +29,7 @@ public class CookieSessionFilter extends AbstractSessionFilter {
 	}
 
 
+	@Override
 	protected String getSessionId(HttpServletRequest request, HttpServletResponse response) {
 		String _cookieName = cookieName;
 		if (_cookieName == null || "".equals(_cookieName)) {
