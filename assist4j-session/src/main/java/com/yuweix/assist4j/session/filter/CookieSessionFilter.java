@@ -24,7 +24,7 @@ import com.yuweix.assist4j.session.conf.SessionConf;
 /**
  * @author yuwei
  */
-public class SessionFilter implements Filter {
+public class CookieSessionFilter implements Filter {
 	/**
 	 * 需要排除的URI
 	 */
@@ -34,10 +34,10 @@ public class SessionFilter implements Filter {
 	/**
 	 * @param cache                           缓存引擎
 	 */
-	public SessionFilter(SessionCache cache) {
+	public CookieSessionFilter(SessionCache cache) {
 		setCache(cache);
 	}
-	public SessionFilter() {
+	public CookieSessionFilter() {
 
 	}
 

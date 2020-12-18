@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
  * 从header中取出某个值作为sessionId
  * @author yuwei
  */
-public class HeaderSessionFilter extends SessionFilter {
+public class HeaderSessionFilter extends CookieSessionFilter {
 	protected String key;
 	protected boolean responseHeader;
 
