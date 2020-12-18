@@ -32,7 +32,6 @@ public class HeaderSessionFilter extends AbstractSessionFilter {
 	}
 
 
-
 	@Override
 	protected String getSessionId(HttpServletRequest request, HttpServletResponse response) {
 		if (key == null || "".equals(key)) {
