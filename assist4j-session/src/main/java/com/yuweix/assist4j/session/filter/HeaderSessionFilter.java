@@ -2,9 +2,9 @@ package com.yuweix.assist4j.session.filter;
 
 
 import com.yuweix.assist4j.session.cache.SessionCache;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
 
 
 /**
@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class HeaderSessionFilter extends AbstractSessionFilter {
 	protected String key;
-	protected boolean responseHeader;
 
 
 	public HeaderSessionFilter(SessionCache cache) {
@@ -27,10 +26,6 @@ public class HeaderSessionFilter extends AbstractSessionFilter {
 		this.key = key;
 	}
 
-	public void setResponseHeader(boolean responseHeader) {
-		this.responseHeader = responseHeader;
-	}
-
 
 	@Override
 	protected String getSessionId(HttpServletRequest request, HttpServletResponse response) {
@@ -38,13 +33,11 @@ public class HeaderSessionFilter extends AbstractSessionFilter {
 			throw new RuntimeException("[key]不能为空！！！");
 		}
 
-		String sessionId = request.getHeader(key);
-		if (sessionId == null || "".equals(sessionId.trim())) {
-			throw new RuntimeException("[sessionId]不能为空！！！");
+		String sid = request.getHeader(key);
+		if (sid == null || "".equals(sid.trim())) {
+			sid = UUID.randomUUID().toString().replace("-", "");
 		}
-		if (responseHeader) {
-			response.setHeader(key, sessionId);
-		}
-		return sessionId;
+		response.setHeader(key, sid);
+		return sid;
 	}
 }
