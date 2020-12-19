@@ -19,7 +19,6 @@ public class ModStrategy implements Strategy {
         if (str == null) {
             return 0;
         }
-        int hashCode = str.hashCode();
-        return hashCode;
+        return Math.abs(str.hashCode());
     }
 }
