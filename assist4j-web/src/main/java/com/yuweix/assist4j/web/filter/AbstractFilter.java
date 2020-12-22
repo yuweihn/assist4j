@@ -38,7 +38,11 @@ public abstract class AbstractFilter<R extends HttpServletRequest, T extends Htt
 	private String encoding = DEFAULT_ENCODING;
 	private String staticPath = DEFAULT_STATIC_PATH;
 	private String scheme = null;
-	private boolean allowCors = true;
+	/**
+	 * 跨域白名单
+	 * 如果originWhiteList为空，所有origin都可访问，否则只允许规定的origin访问
+	 */
+	private List<String> originWhiteList = new ArrayList<>();
 	private boolean allowLogRequest = true;
 
 
@@ -58,8 +62,8 @@ public abstract class AbstractFilter<R extends HttpServletRequest, T extends Htt
 		this.scheme = scheme;
 	}
 
-	public void setAllowCors(boolean allowCors) {
-		this.allowCors = allowCors;
+	public void setOriginWhiteList(List<String> originWhiteList) {
+		this.originWhiteList = originWhiteList;
 	}
 
 	public void setAllowLogRequest(boolean allowLogRequest) {
@@ -83,9 +87,7 @@ public abstract class AbstractFilter<R extends HttpServletRequest, T extends Htt
 
 		setCharacterEncoding(req, resp);
 		setContextPath(req);
-		if (allowCors) {
-			setAccessControl(req, resp);
-		}
+		setAccessControl(req, resp);
 
 		filterChain.doFilter(req, resp);
 
@@ -208,11 +210,12 @@ public abstract class AbstractFilter<R extends HttpServletRequest, T extends Htt
 	protected void setAccessControl(R request, T response) {
 		if (!response.containsHeader("Access-Control-Allow-Origin")) {
 			String requestOrigin = request.getHeader("origin");
-			if (requestOrigin != null && !"".equals(requestOrigin.trim()) && !"null".equals(requestOrigin.trim())) {
+			if (requestOrigin == null || "".equals(requestOrigin.trim()) || "null".equals(requestOrigin.trim())
+					|| (originWhiteList != null && originWhiteList.size() > 0 && !originWhiteList.contains(requestOrigin.trim()))) {
+				response.setHeader("Access-Control-Allow-Origin", "*");
+			} else {
 				response.setHeader("Access-Control-Allow-Origin", requestOrigin);
 				response.setHeader("Access-Control-Allow-Credentials", "true");
-			} else {
-				response.setHeader("Access-Control-Allow-Origin", "*");
 			}
 			response.setHeader("Access-Control-Max-Age", "3600");
 		}
@@ -231,7 +234,7 @@ public abstract class AbstractFilter<R extends HttpServletRequest, T extends Htt
 			return "*";
 		}
 
-        StringBuilder builder = new StringBuilder("");
+		StringBuilder builder = new StringBuilder("");
 		while (headerNames.hasMoreElements()) {
 			String headerName = headerNames.nextElement();
 			if (ACCESS_CONTROL_REQUEST_HEADERS.equalsIgnoreCase(headerName)) {
