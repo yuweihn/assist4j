@@ -15,7 +15,7 @@ public abstract class AbstractLeaderElector implements LeaderElector {
 	}
 
 	@Override
-	public String getLocalNode(String key) {
+	public String getLocalNode() {
 		return localNode;
 	}
 

@@ -14,15 +14,17 @@ public abstract class AbstractTask {
 	private static final LeaderElector DEFAULT_LEADER_ELECTOR = new LeaderElector() {
 		@Override
 		public String acquire(String lock) {
-			return getLocalNode(lock);
+			return getLocalNode();
 		}
+
 		@Override
 		public void release(String lock) {
-			//NO-OP
+
 		}
+
 		@Override
-		public String getLocalNode(String lock) {
-			return "Local";
+		public String getLocalNode() {
+			return "local";
 		}
 	};
 
@@ -32,10 +34,14 @@ public abstract class AbstractTask {
 
 	public void execute() {
 		long startTime = System.currentTimeMillis();
-		LeaderElector leaderElector = getElector();
+		LeaderElector leaderElector = getLeaderElector();
+		if (leaderElector == null) {
+			leaderElector = DEFAULT_LEADER_ELECTOR;
+		}
+
 		String lockName = getLockName();
 		boolean release = getRelease();
-		String localNode = leaderElector.getLocalNode(lockName);
+		String localNode = leaderElector.getLocalNode();
 		String leaderNode = leaderElector.acquire(lockName);
 		if (localNode != null && localNode.equals(leaderNode)) {
 			before();
@@ -67,9 +73,5 @@ public abstract class AbstractTask {
 	}
 	protected LeaderElector getLeaderElector() {
 		return null;
-	}
-	private LeaderElector getElector() {
-		LeaderElector leaderElector = getLeaderElector();
-		return leaderElector != null ? leaderElector : DEFAULT_LEADER_ELECTOR;
 	}
 }
