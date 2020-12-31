@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ZkLeaderElector extends AbstractLeaderElector {
 	private static final Logger log = LoggerFactory.getLogger(ZkLeaderElector.class);
-	private static final String ZK_NODE_NAME_PRE = "/Schedule_leader_";
+	private static final String ZK_NODE_NAME_PRE = "/Schedule_leader%s_";
 
 	private static ZooKeeper zk;
 
@@ -30,12 +30,18 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 	 */
 	private int zkTimeout;
 
+	private String appName;
+
 
 
 	public ZkLeaderElector(String zkConn, int zkTimeout) {
+		this(zkConn, zkTimeout, null);
+	}
+	public ZkLeaderElector(String zkConn, int zkTimeout, String appName) {
 		super();
 		this.zkConn = zkConn;
 		this.zkTimeout = zkTimeout;
+		this.appName = appName;
 	}
 
 	private ZooKeeper getZk() {
@@ -72,7 +78,8 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 
 	@Override
 	public String acquire(String lock) {
-		String key = ZK_NODE_NAME_PRE + lock;
+		String key = String.format(ZK_NODE_NAME_PRE
+				, this.appName == null || "".equals(this.appName.trim()) ? "" : "_" + this.appName.trim()) + lock;
 		String node = getLocalNode();
 		String leaderNode = getNodeValue(key);
 		if (leaderNode == null) {
@@ -89,7 +96,8 @@ public class ZkLeaderElector extends AbstractLeaderElector {
 
 	@Override
 	public void release(String lock) {
-		String key = ZK_NODE_NAME_PRE + lock;
+		String key = String.format(ZK_NODE_NAME_PRE
+				, this.appName == null || "".equals(this.appName.trim()) ? "" : "_" + this.appName.trim()) + lock;
 		if (zk == null) {
 			return;
 		}
