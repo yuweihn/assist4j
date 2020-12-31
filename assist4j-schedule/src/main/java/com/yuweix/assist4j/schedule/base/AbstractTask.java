@@ -16,12 +16,10 @@ public abstract class AbstractTask {
 		public String acquire(String lock) {
 			return getLocalNode();
 		}
-
 		@Override
 		public void release(String lock) {
-
+			//NO-OP
 		}
-
 		@Override
 		public String getLocalNode() {
 			return "local";
