@@ -12,6 +12,7 @@ import com.yuweix.assist4j.core.io.StreamUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,10 +64,10 @@ public class OssUtil {
 
 	private OSSClient getOSSClientWithBucket() {
 		OSSClient ossClient = getOSSClient();
-		if (ossClientWithBucketLockInit == false) {
+		if (!ossClientWithBucketLockInit) {
 			ossClientWithBucketLock.lock();
 			try {
-				if (ossClientWithBucketLockInit == false) {
+				if (!ossClientWithBucketLockInit) {
 					if (!ossClient.doesBucketExist(bucketName)) {
 						ossClient.createBucket(bucketName);
 					}
@@ -159,11 +160,12 @@ public class OssUtil {
 	 */
 	public byte[] downloadFile(String key) {
 		OSSObject ossObject = getOSSClientWithBucket().getObject(new GetObjectRequest(bucketName, key));
-		if (ossObject == null || ossObject.getObjectContent() == null) {
+		InputStream objectContent;
+		if (ossObject == null || (objectContent = ossObject.getObjectContent()) == null) {
 			return null;
 		}
 
-		return StreamUtil.read(ossObject.getObjectContent());
+		return StreamUtil.read(objectContent);
 	}
 
 	/**
