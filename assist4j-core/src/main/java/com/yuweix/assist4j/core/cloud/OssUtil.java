@@ -1,4 +1,4 @@
-package com.yuweix.assist4j.core.oss;
+package com.yuweix.assist4j.core.cloud;
 
 
 import com.aliyun.oss.OSSClient;
