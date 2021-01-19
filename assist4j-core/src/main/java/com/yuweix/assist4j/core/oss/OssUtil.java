@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * OSS文件工具类
+ * 阿里云OSS文件工具类
  * @author yuwei
  */
 public class OssUtil {
