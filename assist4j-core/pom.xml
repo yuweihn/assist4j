@@ -6,7 +6,7 @@
 	<groupId>com.yuweix</groupId>
 	<artifactId>assist4j-core</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>The Project of Assist4j</description>
