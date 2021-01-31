@@ -93,10 +93,11 @@ public class DefaultSerializer implements Serializer {
 		}
 
 		final StringBuilder hexString = new StringBuilder();
-		for (int i = 0; i < byteArray.length; i++) {
-			if ((byteArray[i] & 0xff) < 0x10)
+		for (byte b : byteArray) {
+			if ((b & 0xff) < 0x10) {
 				hexString.append("0");
-			hexString.append(Integer.toHexString(0xFF & byteArray[i]));
+			}
+			hexString.append(Integer.toHexString(0xFF & b));
 		}
 		return hexString.toString().toLowerCase();
 	}
