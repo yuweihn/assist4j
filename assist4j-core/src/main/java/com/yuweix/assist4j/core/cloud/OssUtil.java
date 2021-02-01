@@ -13,9 +13,7 @@ import com.yuweix.assist4j.core.io.StreamUtil;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -166,14 +164,6 @@ public class OssUtil {
 		}
 
 		return StreamUtil.read(objectContent);
-	}
-
-	/**
-	 * 生成一个用HTTP GET方法访问OSSObject的URL
-	 * @param key
-	 */
-	public URL getDownloadURL(String key) {
-		return getOSSClientWithBucket().generatePresignedUrl(bucketName, key, new Date());
 	}
 
 	/**

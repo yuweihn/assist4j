@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -165,14 +163,6 @@ public class CosUtil {
 		}
 
 		return StreamUtil.read(objectContent);
-	}
-
-	/**
-	 * 生成一个用HTTP GET方法访问COSObject的URL
-	 * @param key
-	 */
-	public URL getDownloadURL(String key) {
-		return getCosClientWithBucket().generatePresignedUrl(bucketName, key, new Date());
 	}
 
 	/**
